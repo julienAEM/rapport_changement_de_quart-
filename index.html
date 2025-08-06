@@ -2,14 +2,17 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Formulaire – Changement de quart</title>
+<title>Plan de match – Changement de quart</title>
 <style>
   :root {
-    --primary-color: #253746; /* couleur principale sombre AEM */
-    --secondary-color: #324e67; /* couleur secondaire plus claire */
-    --accent-color: #0078C8; /* bleu vif pour les boutons et liens */
+    --primary-color: #253746;
+    --secondary-color: #324e67;
+    --accent-color: #0078C8;
     --text-light: #ffffff;
     --field-bg: #f5f5f5;
+    --section-bg-blue: #1f3a5f;
+    --section-bg-orange: #a64d00;
+    --section-bg-red: #a00000;
   }
   body {
     font-family: Arial, sans-serif;
@@ -19,7 +22,7 @@
     color: var(--text-light);
   }
   .form-wrapper {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 2rem auto;
     background: var(--secondary-color);
     border-radius: 8px;
@@ -33,109 +36,995 @@
     align-items: center;
     border-bottom: 3px solid var(--accent-color);
   }
-  .form-header img {
-    height: 50px;
-    margin-right: 1rem;
-  }
-  .form-header h1 {
-    font-size: 1.5rem;
-    color: var(--text-light);
-    margin: 0;
-  }
-  .form-content {
-    padding: 2rem;
-  }
-  label {
-    display: block;
-    margin-top: 1rem;
-    font-weight: bold;
-    color: var(--text-light);
-  }
-  input[type="text"], textarea {
-    width: 100%;
-    padding: 0.6rem;
-    margin-top: 0.3rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    background: var(--field-bg);
-    color: #333;
-  }
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
-  input[type="checkbox"] {
-    width: auto;
-    margin-right: 0.5rem;
-  }
-  button {
-    margin-top: 1.5rem;
-    padding: 0.7rem 1.4rem;
-    background: var(--accent-color);
-    color: var(--text-light);
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-  button:hover {
-    background: #005fa0;
-  }
-  /* Bouton lien vers la recherche */
-  .link-button {
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.7rem 1.4rem;
-    background: var(--accent-color);
-    color: var(--text-light);
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  .link-button:hover {
-    background: #005fa0;
-  }
+  .form-header img { height: 50px; margin-right: 1rem; }
+  .form-header h1 { font-size: 1.5rem; color: var(--text-light); margin: 0; }
+  .link-buttons { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
+  .link-button { display: inline-block; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border-radius: 4px; text-decoration: none; font-size: 1rem; }
+  .link-button:hover { background: #005fa0; }
+  .form-content { padding: 2rem; }
+  label { display: block; margin-top: 0.8rem; font-weight: bold; color: var(--text-light); }
+  input[type="text"], textarea, select { width: 100%; padding: 0.6rem; margin-top: 0.2rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; background: var(--field-bg); color: #333; }
+  textarea { resize: vertical; min-height: 60px; }
+  .team-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+  .team-table th, .team-table td { border: 1px solid #ddd; padding: 0.4rem; text-align: left; }
+  .team-table th { background: var(--section-bg-blue); color: var(--text-light); }
+  .category-section { margin-top: 1.5rem; padding: 1rem; background: var(--section-bg-blue); border-radius: 4px; }
+  .category-section h3 { margin-top: 0; margin-bottom: 0.5rem; color: var(--accent-color); }
 </style>
 </head>
 <body>
 <div class="form-wrapper">
   <div class="form-header">
-    <!-- Logo AEM -->
     <img src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" alt="Logo AEM">
-    <h1>Changement de quart</h1>
+    <h1>Plan de match – Changement de quart</h1>
   </div>
-  <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+  <div class="link-buttons">
     <a href="rapport_search.html" class="link-button">Consulter les rapports</a>
     <a href="supervisor_form.html" class="link-button">Rapport fin de rotation (superviseur)</a>
   </div>
   <div class="form-content">
-    <form id="quartForm">
-      <label for="sante">Santé / Sécurité :</label>
-      <input type="text" id="sante" name="sante" placeholder="Entrez du texte ou des chiffres">
+    <form id="planForm">
+      <h2>Équipe</h2>
+      <!-- Table for Équipe section: Simplified to 3 rows for demonstration -->
+      <table class="team-table">
+        <tr>
+          <th>Employé</th>
+          <th>Heure de début</th>
+          <th>Heure de fin</th>
+          <th>Commentaires</th>
+          <th>AST</th>
+        </tr>
+        <!-- Row 1 -->
+        <tr>
+          <td><select name="equipe_membre1">
+                <option value="">--Sélectionnez--</option>
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+              </select></td>
+          <td><input type="text" name="equipe_debut1" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_fin1" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_commentaires1"></td>
+          <td><input type="text" name="equipe_ast1"></td>
+        </tr>
+        <!-- Row 2 -->
+        <tr>
+          <td><select name="equipe_membre2">
+                <option value="">--Sélectionnez--</option>
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+              </select></td>
+          <td><input type="text" name="equipe_debut2" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_fin2" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_commentaires2"></td>
+          <td><input type="text" name="equipe_ast2"></td>
+        </tr>
+        <!-- Row 3 -->
+        <tr>
+          <td><select name="equipe_membre3">
+                <option value="">--Sélectionnez--</option>
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+              </select></td>
+          <td><input type="text" name="equipe_debut3" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_fin3" placeholder="HH:MM"></td>
+          <td><input type="text" name="equipe_commentaires3"></td>
+          <td><input type="text" name="equipe_ast3"></td>
+        </tr>
+      </table>
 
-      <label for="environnement">Environnement :</label>
-      <input type="text" id="environnement" name="environnement" placeholder="Entrez du texte ou des chiffres">
+      <label for="evt_sst">Événement SST :</label>
+      <textarea id="evt_sst" name="evt_sst" placeholder="Décrivez l'événement SST..."></textarea>
 
-      <label for="production">Production (tonnage par client) :</label>
-      <input type="text" id="production" name="production" placeholder="Entrez le tonnage ou un commentaire">
+      <label for="evt_env">Événement environnement et MDR :</label>
+      <textarea id="evt_env" name="evt_env" placeholder="Décrivez l'événement environnement/MDR..."></textarea>
 
-      <label for="fait">Choses faites :</label>
-      <textarea id="fait" name="fait" placeholder="Décrivez les tâches accomplies..."></textarea>
+      <label for="travaux_mec">Travaux mécanique en cours :</label>
+      <textarea id="travaux_mec" name="travaux_mec" placeholder="Décrivez les travaux mécaniques en cours..."></textarea>
 
-      <label for="aFaire">Choses à faire :</label>
-      <textarea id="aFaire" name="aFaire" placeholder="Décrivez les tâches à effectuer..."></textarea>
+      <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
+      <textarea id="resume_jour" name="resume_jour" placeholder="Résumé de la journée ou nuit..."></textarea>
 
-      <label for="commentaire">Commentaire :</label>
-      <textarea id="commentaire" name="commentaire" placeholder="Ajoutez un commentaire supplémentaire..."></textarea>
+      <!-- Insert each category section -->
+      
+      <div class="category-section">
+        <h3>Digestion</h3>
+        <label for="digestion_consigne">Consigne :</label>
+        <textarea id="digestion_consigne" name="digestion_consigne" placeholder="Entrez la consigne..."></textarea>
 
-      <label for="liste">Liste d’envoi (adresses séparées par des virgules) :</label>
-      <input type="text" id="liste" name="liste" placeholder="ex. adresse1@domaine.com, adresse2@domaine.com">
+        <label for="digestion_statut">Statut :</label>
+        <select id="digestion_statut" name="digestion_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
 
-      <div style="margin-top: 1rem; display: flex; align-items: center;">
-        <input type="checkbox" id="sendEmail" name="sendEmail">
-        <label for="sendEmail" style="font-weight: normal; color: var(--text-light);">Envoyer par courriel</label>
+        <label for="digestion_responsables">Responsable(s) des travaux :</label>
+        <select id="digestion_responsables" name="digestion_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="digestion_suivi">Suivi de la consigne :</label>
+        <textarea id="digestion_suivi" name="digestion_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Cristalisation</h3>
+        <label for="cristalisation_consigne">Consigne :</label>
+        <textarea id="cristalisation_consigne" name="cristalisation_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="cristalisation_statut">Statut :</label>
+        <select id="cristalisation_statut" name="cristalisation_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="cristalisation_responsables">Responsable(s) des travaux :</label>
+        <select id="cristalisation_responsables" name="cristalisation_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="cristalisation_suivi">Suivi de la consigne :</label>
+        <textarea id="cristalisation_suivi" name="cristalisation_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Centrifuge</h3>
+        <label for="centrifuge_consigne">Consigne :</label>
+        <textarea id="centrifuge_consigne" name="centrifuge_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="centrifuge_statut">Statut :</label>
+        <select id="centrifuge_statut" name="centrifuge_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="centrifuge_responsables">Responsable(s) des travaux :</label>
+        <select id="centrifuge_responsables" name="centrifuge_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="centrifuge_suivi">Suivi de la consigne :</label>
+        <textarea id="centrifuge_suivi" name="centrifuge_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Décomposition (Harpers)</h3>
+        <label for="décomposition_harpers_consigne">Consigne :</label>
+        <textarea id="décomposition_harpers_consigne" name="décomposition_harpers_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="décomposition_harpers_statut">Statut :</label>
+        <select id="décomposition_harpers_statut" name="décomposition_harpers_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="décomposition_harpers_responsables">Responsable(s) des travaux :</label>
+        <select id="décomposition_harpers_responsables" name="décomposition_harpers_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="décomposition_harpers_suivi">Suivi de la consigne :</label>
+        <textarea id="décomposition_harpers_suivi" name="décomposition_harpers_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Calcination (F04)</h3>
+        <label for="calcination_f04_consigne">Consigne :</label>
+        <textarea id="calcination_f04_consigne" name="calcination_f04_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="calcination_f04_statut">Statut :</label>
+        <select id="calcination_f04_statut" name="calcination_f04_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="calcination_f04_responsables">Responsable(s) des travaux :</label>
+        <select id="calcination_f04_responsables" name="calcination_f04_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="calcination_f04_suivi">Suivi de la consigne :</label>
+        <textarea id="calcination_f04_suivi" name="calcination_f04_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Lavage S02</h3>
+        <label for="lavage_s02_consigne">Consigne :</label>
+        <textarea id="lavage_s02_consigne" name="lavage_s02_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="lavage_s02_statut">Statut :</label>
+        <select id="lavage_s02_statut" name="lavage_s02_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="lavage_s02_responsables">Responsable(s) des travaux :</label>
+        <select id="lavage_s02_responsables" name="lavage_s02_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="lavage_s02_suivi">Suivi de la consigne :</label>
+        <textarea id="lavage_s02_suivi" name="lavage_s02_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Buhler</h3>
+        <label for="buhler_consigne">Consigne :</label>
+        <textarea id="buhler_consigne" name="buhler_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="buhler_statut">Statut :</label>
+        <select id="buhler_statut" name="buhler_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="buhler_responsables">Responsable(s) des travaux :</label>
+        <select id="buhler_responsables" name="buhler_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="buhler_suivi">Suivi de la consigne :</label>
+        <textarea id="buhler_suivi" name="buhler_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>HP60 (Mega Pulse)</h3>
+        <label for="hp60_mega_pulse_consigne">Consigne :</label>
+        <textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="hp60_mega_pulse_statut">Statut :</label>
+        <select id="hp60_mega_pulse_statut" name="hp60_mega_pulse_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="hp60_mega_pulse_responsables">Responsable(s) des travaux :</label>
+        <select id="hp60_mega_pulse_responsables" name="hp60_mega_pulse_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="hp60_mega_pulse_suivi">Suivi de la consigne :</label>
+        <textarea id="hp60_mega_pulse_suivi" name="hp60_mega_pulse_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Mini-Pulse</h3>
+        <label for="mini_pulse_consigne">Consigne :</label>
+        <textarea id="mini_pulse_consigne" name="mini_pulse_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="mini_pulse_statut">Statut :</label>
+        <select id="mini_pulse_statut" name="mini_pulse_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="mini_pulse_responsables">Responsable(s) des travaux :</label>
+        <select id="mini_pulse_responsables" name="mini_pulse_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="mini_pulse_suivi">Suivi de la consigne :</label>
+        <textarea id="mini_pulse_suivi" name="mini_pulse_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Fabrication de Puck</h3>
+        <label for="fabrication_de_puck_consigne">Consigne :</label>
+        <textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="fabrication_de_puck_statut">Statut :</label>
+        <select id="fabrication_de_puck_statut" name="fabrication_de_puck_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="fabrication_de_puck_responsables">Responsable(s) des travaux :</label>
+        <select id="fabrication_de_puck_responsables" name="fabrication_de_puck_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="fabrication_de_puck_suivi">Suivi de la consigne :</label>
+        <textarea id="fabrication_de_puck_suivi" name="fabrication_de_puck_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Traitement des eaux</h3>
+        <label for="traitement_des_eaux_consigne">Consigne :</label>
+        <textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="traitement_des_eaux_statut">Statut :</label>
+        <select id="traitement_des_eaux_statut" name="traitement_des_eaux_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="traitement_des_eaux_responsables">Responsable(s) des travaux :</label>
+        <select id="traitement_des_eaux_responsables" name="traitement_des_eaux_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="traitement_des_eaux_suivi">Suivi de la consigne :</label>
+        <textarea id="traitement_des_eaux_suivi" name="traitement_des_eaux_suivi" placeholder="Suivi de la consigne..."></textarea>
+      </div>
+      <div class="category-section">
+        <h3>Varia</h3>
+        <label for="varia_consigne">Consigne :</label>
+        <textarea id="varia_consigne" name="varia_consigne" placeholder="Entrez la consigne..."></textarea>
+
+        <label for="varia_statut">Statut :</label>
+        <select id="varia_statut" name="varia_statut">
+          <option value="">--Sélectionnez le statut--</option>
+            <option value="À l'arrêt">À l'arrêt</option>
+            <option value="En continu">En continu</option>
+            <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
+            <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
+            <option value="À respecter">À respecter</option>
+            <option value="En cours">En cours</option>
+            <option value="À faire">À faire</option>
+            <option value="Fait">Fait</option>
+            <option value="Important">Important</option>
+            <option value="Très important">Très important</option>
+            <option value="Prioritaire">Prioritaire</option>
+            <option value="Si possible">Si possible</option>
+            <option value="Stand-by">Stand-by</option>
+            <option value="Annulé">Annulé</option>
+            <option value="Remis">Remis</option>
+            <option value="Au besoin">Au besoin</option>
+        </select>
+
+        <label for="varia_responsables">Responsable(s) des travaux :</label>
+        <select id="varia_responsables" name="varia_responsables" multiple size="5">
+            <option value="Alexandre Dulude">Alexandre Dulude</option>
+            <option value="Benoit Anctil">Benoit Anctil</option>
+            <option value="Danik Deschênes">Danik Deschênes</option>
+            <option value="David Michaud">David Michaud</option>
+            <option value="Denis Letourneau">Denis Letourneau</option>
+            <option value="Emrick Miousse">Emrick Miousse</option>
+            <option value="Erik Dugas">Erik Dugas</option>
+            <option value="Eugene Barriault">Eugene Barriault</option>
+            <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+            <option value="Jean-Francois Savard">Jean-Francois Savard</option>
+            <option value="Jonathan Allard">Jonathan Allard</option>
+            <option value="Julien Deschênes">Julien Deschênes</option>
+            <option value="Jérémie Barriault">Jérémie Barriault</option>
+            <option value="Linka Pelletier">Linka Pelletier</option>
+            <option value="Martin Richard">Martin Richard</option>
+            <option value="Masque Full-face">Masque Full-face</option>
+            <option value="Mathieu Sergerie">Mathieu Sergerie</option>
+            <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+            <option value="Mickael Roy">Mickael Roy</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+            <option value="Pierre-Luc Desrosiers">Pierre-Luc Desrosiers</option>
+            <option value="Raymond Émond">Raymond Émond</option>
+            <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+            <option value="Samuel Boucher">Samuel Boucher</option>
+            <option value="Samuel Fortin">Samuel Fortin</option>
+            <option value="Serge Landry">Serge Landry</option>
+            <option value="Simon Synnett">Simon Synnett</option>
+            <option value="Stéphane Dugas">Stéphane Dugas</option>
+            <option value="Sébastien Therrien">Sébastien Therrien</option>
+            <option value="Vincent Morin">Vincent Morin</option>
+            <option value="Yannick Servais">Yannick Servais</option>
+            <option value="Yousri Askri">Yousri Askri</option>
+            <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+            <option value="Étienne Picard">Étienne Picard</option>
+        </select>
+
+        <label for="varia_suivi">Suivi de la consigne :</label>
+        <textarea id="varia_suivi" name="varia_suivi" placeholder="Suivi de la consigne..."></textarea>
       </div>
 
       <button type="submit">Envoyer</button>
