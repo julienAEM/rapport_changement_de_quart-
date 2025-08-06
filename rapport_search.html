@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Recherche des rapports</title>
+<style>
+  :root {
+    --primary-color: #253746;
+    --secondary-color: #324e67;
+    --accent-color: #0078C8;
+    --text-light: #ffffff;
+    --field-bg: #f5f5f5;
+  }
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--primary-color);
+    color: var(--text-light);
+  }
+  .container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    background: var(--secondary-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  .header {
+    background: var(--primary-color);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 3px solid var(--accent-color);
+  }
+  .header img {
+    height: 50px;
+    margin-right: 1rem;
+  }
+  .header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+  .content {
+    padding: 2rem;
+  }
+  form {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+  input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    background: var(--field-bg);
+    color: #333;
+  }
+  button {
+    padding: 0.7rem 1.4rem;
+    background: var(--accent-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  button:hover {
+    background: #005fa0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 0.6rem;
+    border: 1px solid #ccc;
+    text-align: left;
+    background: var(--field-bg);
+    color: #333;
+  }
+  th {
+    background: #e0e0e0;
+    color: #000;
+  }
+  .nav-links {
+    margin-bottom: 1rem;
+  }
+  .nav-links a {
+    color: var(--accent-color);
+    text-decoration: none;
+  }
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <img src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" alt="Logo AEM">
+    <h1>Rapports envoyés</h1>
+  </div>
+  <div class="content">
+    <div class="nav-links">
+      <a href="index.html">Retour au formulaire</a>
+    </div>
+    <form action="#" method="get">
+      <input type="text" name="keyword" placeholder="Rechercher..."/>
+      <button type="submit">Rechercher</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Date/Heure</th>
+          <th>Santé / Sécurité</th>
+          <th>Environnement</th>
+          <th>Production</th>
+          <th>Choses faites</th>
+          <th>Choses à faire</th>
+          <th>Commentaire</th>
+          <th>Liste d’envoi</th>
+          <th>Envoyé par courriel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="9">La recherche et l’affichage dynamiques ne sont pas disponibles sur cette version statique.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
