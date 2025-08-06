@@ -50,6 +50,16 @@
   .team-table th { background: var(--section-bg-blue); color: var(--text-light); }
   .category-section { margin-top: 1.5rem; padding: 1rem; background: var(--section-bg-blue); border-radius: 4px; }
   .category-section h3 { margin-top: 0; margin-bottom: 0.5rem; color: var(--accent-color); }
+
+  @media print {
+    button {
+      display: none;
+    }
+    .link-buttons {
+      display: none;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1028,6 +1038,7 @@
       </div>
 
       <button type="submit">Envoyer</button>
+      <button type="button" onclick="window.print()">Imprimer</button>
     </form>
   </div>
 </div>
