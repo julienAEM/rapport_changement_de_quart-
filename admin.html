@@ -77,21 +77,36 @@ Nuit</textarea>
 
   <p>Ces modifications ne sont pas enregistrées automatiquement sur le site. Après avoir mis à jour ces listes, vous devrez copier les nouvelles valeurs dans les fichiers HTML correspondants du dépôt GitHub.</p>
 
+
+  <h2>Modifier le code d’accès</h2>
+  <label for="newPassword">Nouveau code :</label>
+  <input type="password" id="newPassword" style="width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px; background: var(--field-bg); color:#333;">
+  <button type="button" onclick="updatePassword()">Enregistrer</button>
+
 </div>
 <div id="accessDenied" class="wrapper hidden">
   <h1>Accès refusé</h1>
   <p>Vous n'avez pas l'autorisation d'accéder à cette page.</p>
 </div>
 <script>
-  // Simple password prompt
-  document.addEventListener('DOMContentLoaded', function() {
-    var pwd = prompt('Veuillez entrer le mot de passe administrateur :');
-    if (pwd === 'admin') {
-      document.getElementById('adminContent').style.display = 'block';
-    } else {
-      document.getElementById('accessDenied').style.display = 'block';
-    }
-  });
+document.addEventListener('DOMContentLoaded', function() {
+  var storedPwd = localStorage.getItem('adminPassword') || 'admin';
+  var pwd = prompt('Veuillez entrer le mot de passe administrateur :');
+  if (pwd === storedPwd) {
+    document.getElementById('adminContent').style.display = 'block';
+  } else {
+    document.getElementById('accessDenied').style.display = 'block';
+  }
+});
+function updatePassword() {
+  var newPwd = document.getElementById('newPassword').value;
+  if (newPwd) {
+    localStorage.setItem('adminPassword', newPwd);
+    alert('Nouveau code enregistré.');
+  } else {
+    alert('Veuillez saisir un nouveau code.');
+  }
+}
 </script>
 </body>
 </html>
