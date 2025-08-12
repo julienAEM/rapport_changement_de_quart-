@@ -63,6 +63,11 @@
 
 
 .status-control { margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+
+.status-btn { padding: 0.4rem 0.8rem; border: none; border-radius: 4px; color: #fff; margin-right: 0.3rem; cursor: pointer; }
+.status-btn.arr { background-color: red; }
+.status-btn.func { background-color: green; }
+.status-btn.selected { box-shadow: 0 0 0 3px #fff inset; }
 </style>
 </head>
 <body>
@@ -102,94 +107,22 @@
 <textarea id="travaux_mec" name="travaux_mec"></textarea>
 <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
 <textarea id="resume_jour" name="resume_jour"></textarea>
-<!-- Insert each category section -->
-<div class="category-section">
-<h3>Digestion</h3>
-<label for="digestion_consigne">Consigne :</label>
-<textarea id="digestion_consigne" name="digestion_consigne"></textarea>
-<label for="digestion_commentaire">Commentaires :</label>
-<textarea id="digestion_commentaire" name="digestion_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="digestion_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Cristalisation</h3>
-<label for="cristalisation_consigne">Consigne :</label>
-<textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea>
-<label for="cristalisation_commentaire">Commentaires :</label>
-<textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="cristalisation_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Centrifuge</h3>
-<label for="centrifuge_consigne">Consigne :</label>
-<textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea>
-<label for="centrifuge_commentaire">Commentaires :</label>
-<textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="centrifuge_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Décomposition (Harpers)</h3>
-<label for="décomposition_harpers_consigne">Consigne :</label>
-<textarea id="décomposition_harpers_consigne" name="décomposition_harpers_consigne"></textarea>
-<label for="décomposition_harpers_commentaire">Commentaires :</label>
-<textarea id="décomposition_harpers_commentaire" name="décomposition_harpers_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="décomposition_harpers_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Calcination (F04)</h3>
-<label for="calcination_f04_consigne">Consigne :</label>
-<textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea>
-<label for="calcination_f04_commentaire">Commentaires :</label>
-<textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="calcination_f04_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Lavage S02</h3>
-<label for="lavage_s02_consigne">Consigne :</label>
-<textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea>
-<label for="lavage_s02_commentaire">Commentaires :</label>
-<textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="lavage_s02_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Buhler</h3>
-<label for="buhler_consigne">Consigne :</label>
-<textarea id="buhler_consigne" name="buhler_consigne"></textarea>
-<label for="buhler_commentaire">Commentaires :</label>
-<textarea id="buhler_commentaire" name="buhler_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="buhler_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>HP60 (Mega Pulse)</h3>
-<label for="hp60_mega_pulse_consigne">Consigne :</label>
-<textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea>
-<label for="hp60_mega_pulse_commentaire">Commentaires :</label>
-<textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="hp60_mega_pulse_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Mini-Pulse</h3>
-<label for="mini_pulse_consigne">Consigne :</label>
-<textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea>
-<label for="mini_pulse_commentaire">Commentaires :</label>
-<textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="mini_pulse_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Fabrication de Puck</h3>
-<label for="fabrication_de_puck_consigne">Consigne :</label>
-<textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea>
-<label for="fabrication_de_puck_commentaire">Commentaires :</label>
-<textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="fabrication_de_puck_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Traitement des eaux</h3>
-<label for="traitement_des_eaux_consigne">Consigne :</label>
-<textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea>
-<label for="traitement_des_eaux_commentaire">Commentaires :</label>
-<textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="traitement_des_eaux_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
-<div class="category-section">
-<h3>Commentaire générale</h3>
-<label for="varia_consigne">Consigne :</label>
-<textarea id="varia_consigne" name="varia_consigne"></textarea>
-<label for="varia_commentaire">Commentaires :</label>
-<textarea id="varia_commentaire" name="varia_commentaire"></textarea><div class="status-control"><button style="background-color:red;color:white;margin-right:0.5rem;" type="button">Arrêt</button><button style="background-color:green;color:white;margin-right:0.5rem;" type="button">Fonction</button><label><input name="varia_commentaire_actif" type="checkbox"/> En fonction</label></div>
-</div>
+<!-- Insert each category section --><table class="team-table" id="categoryTable"><thead><tr><th>Catégorie</th><th>Consigne</th><th>Commentaires</th><th>État</th></tr></thead><tbody><tr data-category="Digestion"><td>Digestion</td><td><textarea id="digestion_consigne" name="digestion_consigne"></textarea></td><td><textarea id="digestion_commentaire" name="digestion_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Cristalisation"><td>Cristalisation</td><td><textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea></td><td><textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Centrifuge"><td>Centrifuge</td><td><textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea></td><td><textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Décomposition (Harpers)"><td>Décomposition (Harpers)</td><td><textarea id="decomposition_harpers_consigne" name="decomposition_harpers_consigne"></textarea></td><td><textarea id="decomposition_harpers_commentaire" name="decomposition_harpers_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Calcination (F04)"><td>Calcination (F04)</td><td><textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea></td><td><textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Lavage S02"><td>Lavage S02</td><td><textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea></td><td><textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Buhler"><td>Buhler</td><td><textarea id="buhler_consigne" name="buhler_consigne"></textarea></td><td><textarea id="buhler_commentaire" name="buhler_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="HP60 (Mega Pulse)"><td>HP60 (Mega Pulse)</td><td><textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea></td><td><textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Mini-Pulse"><td>Mini-Pulse</td><td><textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea></td><td><textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Fabrication de Puck"><td>Fabrication de Puck</td><td><textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea></td><td><textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Traitement des eaux"><td>Traitement des eaux</td><td><textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea></td><td><textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr></tbody></table>
+
+
+
+
+
+
+
+
+
+
+
+
 <button type="submit">Envoyer</button>
 <button onclick="window.print()" type="button">Imprimer</button>
-</form>
+<button id="sendEmailBtn" style="margin-top:1rem;background:var(--accent-color);color:var(--text-light);padding:0.6rem 1rem;border:none;border-radius:4px;cursor:pointer;" type="button">Envoyer par courriel</button></form>
 </div>
 </div>
 <script>
@@ -201,5 +134,44 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-</body>
+<script>
+function toggleStatus(btn) {
+  var row = btn.closest('tr');
+  var buttons = row.querySelectorAll('.status-btn');
+  buttons.forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var sendBtn = document.getElementById('sendEmailBtn');
+  if (sendBtn) {
+    sendBtn.addEventListener('click', function() {
+      var date = document.getElementById('date_du_jour') ? document.getElementById('date_du_jour').value : '';
+      var superviseur = document.getElementById('superviseur') ? document.getElementById('superviseur').value : '';
+      var quart = document.getElementById('quart') ? document.getElementById('quart').value : '';
+      var subject = 'Plan de match - ' + date;
+      var body = 'Superviseur: ' + superviseur + '
+' + 'Quart: ' + quart + '
+
+';
+      var rows = document.querySelectorAll('#categoryTable tbody tr');
+      rows.forEach(function(row) {
+        var category = row.getAttribute('data-category');
+        var consigne = row.querySelector('textarea[name$="_consigne"]').value;
+        var commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
+        var stateBtn = row.querySelector('.status-btn.selected');
+        var state = stateBtn ? stateBtn.textContent : '';
+        body += category + '
+Consigne: ' + consigne + '
+Commentaires: ' + commentaire + '
+État: ' + state + '
+
+';
+      });
+      var mailtoLink = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      window.location.href = mailtoLink;
+    });
+  }
+});
+</script></body>
 </html>
