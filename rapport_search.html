@@ -1,7 +1,8 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8"/>
 <title>Recherche de rapports</title>
 <style>
   :root {
@@ -31,137 +32,116 @@
 </head>
 <body>
 <div class="wrapper">
-  <div class="header">
-    <img src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" alt="Logo AEM">
-    <h1>Recherche de rapports</h1>
-  </div>
-  <div class="nav-buttons">
-    <a href="index.html" class="nav-button">Nouveau rapport de quart</a>
-    <a href="supervisor_form.html" class="nav-button">Rapport fin de rotation</a>
-  </div>
-  <div class="content">
-    
-    <form id="searchForm">
-      <div>
-        <label for="date_debut">Date début :</label>
-        <input type="date" id="date_debut" name="date_debut">
-      </div>
-      <div>
-        <label for="date_fin">Date fin :</label>
-        <input type="date" id="date_fin" name="date_fin">
-      </div>
-      <div>
-        <label for="superviseur">Superviseur :</label>
-        <select id="superviseur" name="superviseur">
-          <option value="">--Tous--</option>
-                <option value="Vincent Lévesque">Vincent Lévesque</option>
-                <option value="Olivier Chrétien">Olivier Chrétien</option>
-        </select>
-      </div>
-      <div>
-        <label for="quart">Quart :</label>
-        <select id="quart" name="quart">
-          <option value="">--Tous--</option>
-          <option value="Jour">Jour</option>
-          <option value="Nuit">Nuit</option>
-        </select>
-      </div>
-      <div>
-        <label for="equipe">Équipe :</label>
-        <select id="equipe" name="equipe">
-          <option value="">--Toutes--</option>
-                <option value="Raymond Émond">Raymond Émond</option>
-                <option value="Sébastien Therrien">Sébastien Therrien</option>
-                <option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
-                <option value="Erik Dugas">Erik Dugas</option>
-                <option value="Yannick Servais">Yannick Servais</option>
-                <option value="Yousri Askri">Yousri Askri</option>
-                <option value="Stéphane Dugas">Stéphane Dugas</option>
-                <option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
-                <option value="Vincent Morin">Vincent Morin</option>
-                <option value="Danik Deschênes">Danik Deschênes</option>
-                <option value="Simon Synnett">Simon Synnett</option>
-                <option value="Jérémie Barriault">Jérémie Barriault</option>
-                <option value="Jean-Francois Savard">Jean-Francois Savard</option>
-                <option value="Samuel Boucher">Samuel Boucher</option>
-                <option value="Serge Landry">Serge Landry</option>
-                <option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
-                <option value="David Michaud">David Michaud</option>
-                <option value="Étienne Picard">Étienne Picard</option>
-                <option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
-                <option value="Alexandre Dulude">Alexandre Dulude</option>
-                <option value="Mickael Roy">Mickael Roy</option>
-                <option value="Linka Pelletier">Linka Pelletier</option>
-        </select>
-      </div>
-      <div>
-        <label for="categorie">Catégorie :</label>
-        <select id="categorie" name="categorie">
-          <option value="">--Toutes--</option>
-          <option value="">--Toutes--</option>
-                <option value="Digestion">Digestion</option>
-                <option value="Cristalisation">Cristalisation</option>
-                <option value="Centrifuge">Centrifuge</option>
-                <option value="Décomposition (Harpers)">Décomposition (Harpers)</option>
-                <option value="Calcination (F04)">Calcination (F04)</option>
-                <option value="Lavage S02">Lavage S02</option>
-                <option value="Buhler">Buhler</option>
-                <option value="HP60 (Mega Pulse)">HP60 (Mega Pulse)</option>
-                <option value="Mini-Pulse">Mini-Pulse</option>
-                <option value="Fabrication de Puck">Fabrication de Puck</option>
-                <option value="Traitement des eaux">Traitement des eaux</option>
-                <option value="Varia">Varia</option>
-        </select>
-      </div>
-      <div>
-        <label for="statut">Statut :</label>
-        <select id="statut" name="statut">
-          <option value="">--Tous--</option>
-          <option value="">--Tous--</option>
-                <option value="À l'arrêt">À l'arrêt</option>
-                <option value="En continu">En continu</option>
-                <option value="À partir 1 fois par shift">À partir 1 fois par shift</option>
-                <option value="À partir 1 fois par jour">À partir 1 fois par jour</option>
-                <option value="À respecter">À respecter</option>
-                <option value="En cours">En cours</option>
-                <option value="À faire">À faire</option>
-                <option value="Fait">Fait</option>
-                <option value="Important">Important</option>
-                <option value="Très important">Très important</option>
-                <option value="Prioritaire">Prioritaire</option>
-                <option value="Si possible">Si possible</option>
-                <option value="Stand-by">Stand-by</option>
-                <option value="Annulé">Annulé</option>
-                <option value="Remis">Remis</option>
-                <option value="Au besoin">Au besoin</option>
-        </select>
-      </div>
-      <div style="grid-column: span 2;">
-        <label for="texte">Recherche texte :</label>
-        <input type="text" id="texte" name="texte">
-      </div>
-      <div style="grid-column: span 2; text-align: right;">
-        <button type="submit" style="padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border: none; border-radius: 4px; cursor: pointer;">Rechercher</button>
-      </div>
-    </form>
+<div class="header">
+<img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&amp;height=64&amp;name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png"/>
+<h1>Recherche de rapports</h1>
+</div>
+<div class="nav-buttons">
+<a class="nav-button" href="index.html">Nouveau rapport de quart</a>
+<a class="nav-button" href="supervisor_form.html">Rapport fin de rotation</a>
+</div>
+<div class="content">
+<form id="searchForm">
+<div>
+<label for="date_debut">Date début :</label>
+<input id="date_debut" name="date_debut" type="date"/>
+</div>
+<div>
+<label for="date_fin">Date fin :</label>
+<input id="date_fin" name="date_fin" type="date"/>
+</div>
+<div>
+<label for="superviseur">Superviseur :</label>
+<select id="superviseur" name="superviseur">
+<option value="">--Tous--</option>
+<option value="Vincent Lévesque">Vincent Lévesque</option>
+<option value="Olivier Chrétien">Olivier Chrétien</option>
+</select>
+</div>
+<div>
+<label for="quart">Quart :</label>
+<select id="quart" name="quart">
+<option value="">--Tous--</option>
+<option value="Jour">Jour</option>
+<option value="Nuit">Nuit</option>
+</select>
+</div>
+<div>
+<label for="equipe">Équipe :</label>
+<select id="equipe" name="equipe">
+<option value="">--Toutes--</option>
+<option value="Raymond Émond">Raymond Émond</option>
+<option value="Sébastien Therrien">Sébastien Therrien</option>
+<option value="Éric-Hugo Bastien">Éric-Hugo Bastien</option>
+<option value="Erik Dugas">Erik Dugas</option>
+<option value="Yannick Servais">Yannick Servais</option>
+<option value="Yousri Askri">Yousri Askri</option>
+<option value="Stéphane Dugas">Stéphane Dugas</option>
+<option value="Jean-Christophe Vallée">Jean-Christophe Vallée</option>
+<option value="Vincent Morin">Vincent Morin</option>
+<option value="Danik Deschênes">Danik Deschênes</option>
+<option value="Simon Synnett">Simon Synnett</option>
+<option value="Jérémie Barriault">Jérémie Barriault</option>
+<option value="Jean-Francois Savard">Jean-Francois Savard</option>
+<option value="Samuel Boucher">Samuel Boucher</option>
+<option value="Serge Landry">Serge Landry</option>
+<option value="Sammuel Bapeneck">Sammuel Bapeneck</option>
+<option value="David Michaud">David Michaud</option>
+<option value="Étienne Picard">Étienne Picard</option>
+<option value="Maxime Therrien-Dugas">Maxime Therrien-Dugas</option>
+<option value="Alexandre Dulude">Alexandre Dulude</option>
+<option value="Mickael Roy">Mickael Roy</option>
+<option value="Linka Pelletier">Linka Pelletier</option>
+</select>
+</div>
+<div>
+<label for="categorie">Catégorie :</label>
+<select id="categorie" name="categorie">
+<option value="">--Toutes--</option>
+<option value="">--Toutes--</option>
+<option value="Digestion">Digestion</option>
+<option value="Cristalisation">Cristalisation</option>
+<option value="Centrifuge">Centrifuge</option>
+<option value="Décomposition (Harpers)">Décomposition (Harpers)</option>
+<option value="Calcination (F04)">Calcination (F04)</option>
+<option value="Lavage S02">Lavage S02</option>
+<option value="Buhler">Buhler</option>
+<option value="HP60 (Mega Pulse)">HP60 (Mega Pulse)</option>
+<option value="Mini-Pulse">Mini-Pulse</option>
+<option value="Fabrication de Puck">Fabrication de Puck</option>
+<option value="Traitement des eaux">Traitement des eaux</option>
+<option value="Commentaire générale">Commentaire générale</option>
+</select>
+</div>
+<div>
 
-    <table id="resultsTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Équipe</th>
-          <th>Catégorie</th>
-          <th>Statut</th>
-          <th>Résumé</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="no-results">
-          <td colspan="5">Aucun résultat pour le moment.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+
+</div>
+<div style="grid-column: span 2;">
+<label for="texte">Recherche texte :</label>
+<input id="texte" name="texte" type="text"/>
+</div>
+<div style="grid-column: span 2; text-align: right;">
+<button style="padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border: none; border-radius: 4px; cursor: pointer;" type="submit">Rechercher</button>
+</div>
+</form>
+<table id="resultsTable">
+<thead>
+<tr>
+<th>Date</th>
+<th>Équipe</th>
+<th>Catégorie</th>
+
+<th>Résumé</th>
+</tr>
+</thead>
+<tbody>
+<tr class="no-results">
+<td colspan="4">Aucun résultat pour le moment.</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 </body>
 </html>
