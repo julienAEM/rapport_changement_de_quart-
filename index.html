@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 
+<!--
+  Version finale du formulaire de changement de quart avec envoi automatique par courriel
+  et sauvegarde du rapport. Cette page regroupe les catégories dans un tableau
+  unique. Le bouton "Envoyer par courriel" a été supprimé : l'envoi se fait
+  maintenant automatiquement lors de la soumission du formulaire (bouton
+  "Envoyer"). Les adresses courriel des destinataires sont définies dans
+  admin_modified.html et sauvegardées via localStorage.
+-->
 <html lang="fr">
 <head>
 <meta charset="utf-8"/>
@@ -53,80 +61,154 @@
   .category-section h3 { margin-top: 0; margin-bottom: 0.5rem; color: var(--accent-color); }
 
   @media print {
-    button {
-      display: none;
-    }
-    .link-buttons {
-      display: none;
-    }
+    button { display: none; }
+    .link-buttons { display: none; }
   }
 
+  .status-control { margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
 
-.status-control { margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-
-.status-btn { padding: 0.4rem 0.8rem; border: none; border-radius: 4px; color: #fff; margin-right: 0.3rem; cursor: pointer; }
-.status-btn.arr { background-color: red; }
-.status-btn.func { background-color: green; }
-.status-btn.selected { box-shadow: 0 0 0 3px #fff inset; }
-
-.status-btn.arr.selected { background-color: #ff6666; }
-.status-btn.func.selected { background-color: #66cc66; }
-.status-btn.selected { border: 2px solid #fff; }
+  .status-btn { padding: 0.4rem 0.8rem; border: none; border-radius: 4px; color: #fff; margin-right: 0.3rem; cursor: pointer; }
+  .status-btn.arr { background-color: red; }
+  .status-btn.func { background-color: green; }
+  .status-btn.selected { box-shadow: 0 0 0 3px #fff inset; }
+  .status-btn.arr.selected { background-color: #ff6666; }
+  .status-btn.func.selected { background-color: #66cc66; }
+  .status-btn.selected { border: 2px solid #fff; }
 </style>
 </head>
 <body>
 <div class="form-wrapper">
-<div class="form-header">
-<img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&amp;height=64&amp;name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png"/>
-<h1>Plan de match – Changement de quart</h1>
-</div>
-<div class="link-buttons">
-<a class="link-button" href="admin.html">Admin</a>
-<a class="link-button" href="rapport_search.html">Consulter les rapports</a>
-<a class="link-button" href="supervisor_form.html">Rapport fin de rotation (superviseur)</a>
-</div>
-<div class="form-content">
-<h2>Superviseur</h2>
-<label for="superviseur">Superviseur :</label>
-<select id="superviseur" name="superviseur">
-<option value="">--Sélectionnez--</option>
-<option value="Vincent Lévesque">Vincent Lévesque</option>
-<option value="Olivier Chrétien">Olivier Chrétien</option>
-</select>
-<label for="quart">Quart :</label>
-<select id="quart" name="quart">
-<option value="">--Sélectionnez--</option>
-<option value="Jour">Jour</option>
-<option value="Nuit">Nuit</option>
-</select>
-<label for="date_du_jour">Date :</label>
-<input id="date_du_jour" name="date_du_jour" type="date"/>
-<form id="planForm">
-<!-- Table for Équipe section: Simplified to 3 rows for demonstration -->
-<label for="evt_sst">Événement SST :</label>
-<textarea id="evt_sst" name="evt_sst"></textarea>
-<label for="evt_env">Événement environnement et MDR :</label>
-<textarea id="evt_env" name="evt_env"></textarea>
-<label for="travaux_mec">Travaux mécanique en cours :</label>
-<textarea id="travaux_mec" name="travaux_mec"></textarea>
-<label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
-<textarea id="resume_jour" name="resume_jour"></textarea>
-<!-- Insert each category section --><table class="team-table" id="categoryTable"><thead><tr><th>Catégorie</th><th>Consigne</th><th>Commentaires</th><th>État</th></tr></thead><tbody><tr data-category="Digestion"><td>Digestion</td><td><textarea id="digestion_consigne" name="digestion_consigne"></textarea></td><td><textarea id="digestion_commentaire" name="digestion_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Cristalisation"><td>Cristalisation</td><td><textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea></td><td><textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Centrifuge"><td>Centrifuge</td><td><textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea></td><td><textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Décomposition (Harpers)"><td>Décomposition (Harpers)</td><td><textarea id="decomposition_harpers_consigne" name="decomposition_harpers_consigne"></textarea></td><td><textarea id="decomposition_harpers_commentaire" name="decomposition_harpers_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Calcination (F04)"><td>Calcination (F04)</td><td><textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea></td><td><textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Lavage S02"><td>Lavage S02</td><td><textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea></td><td><textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Buhler"><td>Buhler</td><td><textarea id="buhler_consigne" name="buhler_consigne"></textarea></td><td><textarea id="buhler_commentaire" name="buhler_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="HP60 (Mega Pulse)"><td>HP60 (Mega Pulse)</td><td><textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea></td><td><textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Mini-Pulse"><td>Mini-Pulse</td><td><textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea></td><td><textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Fabrication de Puck"><td>Fabrication de Puck</td><td><textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea></td><td><textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Traitement des eaux"><td>Traitement des eaux</td><td><textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea></td><td><textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr></tbody></table>
-<button type="submit">Envoyer</button>
-<button onclick="window.print()" type="button">Imprimer</button>
-<button id="sendEmailBtn" style="margin-top:1rem;background:var(--accent-color);color:var(--text-light);padding:0.6rem 1rem;border:none;border-radius:4px;cursor:pointer;" type="button">Envoyer par courriel</button></form>
-</div>
+  <div class="form-header">
+    <img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&amp;height=64&amp;name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png"/>
+    <h1>Plan de match – Changement de quart</h1>
+  </div>
+  <div class="link-buttons">
+    <a class="link-button" href="admin.html">Admin</a>
+    <a class="link-button" href="rapport_search.html">Consulter les rapports</a>
+    <a class="link-button" href="supervisor_form.html">Rapport fin de rotation (superviseur)</a>
+  </div>
+  <div class="form-content">
+    <h2>Superviseur</h2>
+    <label for="superviseur">Superviseur :</label>
+    <select id="superviseur" name="superviseur">
+      <option value="">--Sélectionnez--</option>
+      <option value="Vincent Lévesque">Vincent Lévesque</option>
+      <option value="Olivier Chrétien">Olivier Chrétien</option>
+    </select>
+    <label for="quart">Quart :</label>
+    <select id="quart" name="quart">
+      <option value="">--Sélectionnez--</option>
+      <option value="Jour">Jour</option>
+      <option value="Nuit">Nuit</option>
+    </select>
+    <label for="date_du_jour">Date :</label>
+    <input id="date_du_jour" name="date_du_jour" type="date"/>
+    <form id="planForm">
+      <!-- Section synthèse général -->
+      <label for="evt_sst">Événement SST :</label>
+      <textarea id="evt_sst" name="evt_sst"></textarea>
+      <label for="evt_env">Événement environnement et MDR :</label>
+      <textarea id="evt_env" name="evt_env"></textarea>
+      <label for="travaux_mec">Travaux mécanique en cours :</label>
+      <textarea id="travaux_mec" name="travaux_mec"></textarea>
+      <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
+      <textarea id="resume_jour" name="resume_jour"></textarea>
+
+      <!-- Tableau des catégories -->
+      <table class="team-table" id="categoryTable">
+        <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Consigne</th>
+            <th>Commentaires</th>
+            <th>État</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-category="Digestion">
+            <td>Digestion</td>
+            <td><textarea id="digestion_consigne" name="digestion_consigne"></textarea></td>
+            <td><textarea id="digestion_commentaire" name="digestion_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Cristalisation">
+            <td>Cristalisation</td>
+            <td><textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea></td>
+            <td><textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Centrifuge">
+            <td>Centrifuge</td>
+            <td><textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea></td>
+            <td><textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Décomposition (Harpers)">
+            <td>Décomposition (Harpers)</td>
+            <td><textarea id="decomposition_harpers_consigne" name="decomposition_harpers_consigne"></textarea></td>
+            <td><textarea id="decomposition_harpers_commentaire" name="decomposition_harpers_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Calcination (F04)">
+            <td>Calcination (F04)</td>
+            <td><textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea></td>
+            <td><textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Lavage S02">
+            <td>Lavage S02</td>
+            <td><textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea></td>
+            <td><textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Buhler">
+            <td>Buhler</td>
+            <td><textarea id="buhler_consigne" name="buhler_consigne"></textarea></td>
+            <td><textarea id="buhler_commentaire" name="buhler_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="HP60 (Mega Pulse)">
+            <td>HP60 (Mega Pulse)</td>
+            <td><textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea></td>
+            <td><textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Mini-Pulse">
+            <td>Mini-Pulse</td>
+            <td><textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea></td>
+            <td><textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Fabrication de Puck">
+            <td>Fabrication de Puck</td>
+            <td><textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea></td>
+            <td><textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+          <tr data-category="Traitement des eaux">
+            <td>Traitement des eaux</td>
+            <td><textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea></td>
+            <td><textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea></td>
+            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button type="submit">Envoyer</button>
+      <button type="button" onclick="window.print()">Imprimer</button>
+    </form>
+  </div>
 </div>
 <script>
+// Définir la date par défaut au chargement
 document.addEventListener('DOMContentLoaded', function() {
-  const dateInput = document.getElementById('date_du_jour');
+  var dateInput = document.getElementById('date_du_jour');
   if (dateInput) {
-    const today = new Date().toISOString().substr(0, 10);
+    var today = new Date().toISOString().substr(0, 10);
     dateInput.value = today;
   }
 });
-</script>
-<script>
+
+// Fonction pour basculer l'état d'une ligne (boutons Arrêt/Fonction)
 function toggleStatus(btn) {
   var row = btn.closest('tr');
   var buttons = row.querySelectorAll('.status-btn');
@@ -134,36 +216,77 @@ function toggleStatus(btn) {
   btn.classList.add('selected');
 }
 
+// Gestion de la soumission du formulaire
 document.addEventListener('DOMContentLoaded', function() {
-  var sendBtn = document.getElementById('sendEmailBtn');
-  if (sendBtn) {
-    sendBtn.addEventListener('click', function() {
+  var form = document.getElementById('planForm');
+  if (form) {
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      // Récupérer les informations générales
       var date = document.getElementById('date_du_jour') ? document.getElementById('date_du_jour').value : '';
       var superviseur = document.getElementById('superviseur') ? document.getElementById('superviseur').value : '';
       var quart = document.getElementById('quart') ? document.getElementById('quart').value : '';
-      var subject = 'Plan de match - ' + date;
-      var body = 'Superviseur: ' + superviseur + '
-' + 'Quart: ' + quart + '
+      var evt_sst = document.getElementById('evt_sst').value;
+      var evt_env = document.getElementById('evt_env').value;
+      var travaux_mec = document.getElementById('travaux_mec').value;
+      var resume_jour = document.getElementById('resume_jour').value;
 
-';
+      // Composer un objet rapport
+      var report = {
+        date: date,
+        superviseur: superviseur,
+        quart: quart,
+        evt_sst: evt_sst,
+        evt_env: evt_env,
+        travaux_mec: travaux_mec,
+        resume_jour: resume_jour,
+        categories: []
+      };
+      var body = 'Superviseur: ' + superviseur + '\nQuart: ' + quart + '\nDate: ' + date + '\n\n';
+      body += 'Événement SST: ' + evt_sst + '\n';
+      body += 'Événement environnement et MDR: ' + evt_env + '\n';
+      body += 'Travaux mécanique en cours: ' + travaux_mec + '\n';
+      body += 'Résumé journée/nuit: ' + resume_jour + '\n\n';
+
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
         var category = row.getAttribute('data-category');
         var consigne = row.querySelector('textarea[name$="_consigne"]').value;
         var commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
         var stateBtn = row.querySelector('.status-btn.selected');
-        var state = stateBtn ? stateBtn.textContent : '';
-        body += category + '
-Consigne: ' + consigne + '
-Commentaires: ' + commentaire + '
-État: ' + state + '
-
-';
+        var etat = stateBtn ? stateBtn.textContent : '';
+        report.categories.push({ categorie: category, consigne: consigne, commentaire: commentaire, etat: etat });
+        body += category + '\nConsigne: ' + consigne + '\nCommentaires: ' + commentaire + '\nÉtat: ' + etat + '\n\n';
       });
-      var mailtoLink = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+
+      // Enregistrer le rapport dans localStorage
+      try {
+        var existing = localStorage.getItem('rapports');
+        var arr = existing ? JSON.parse(existing) : [];
+        arr.push(report);
+        localStorage.setItem('rapports', JSON.stringify(arr));
+      } catch (e) {
+        console.error('Impossible de sauvegarder le rapport : ', e);
+      }
+
+      // Préparer l'envoi par courriel
+      var emailListRaw = localStorage.getItem('emailList') || '';
+      // Séparer par point-virgule ou retour à la ligne et nettoyer les espaces
+      var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
+      var toField = emailArray.join(',');
+      var subject = 'Plan de match - ' + date;
+      // Construire le lien mailto
+      var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      // Ouvrir l'application courriel
       window.location.href = mailtoLink;
+
+      // Optionnel : notification
+      alert('Rapport envoyé et enregistré.');
+      // Réinitialiser le formulaire si nécessaire
+      // form.reset();
     });
   }
 });
-</script></body>
+</script>
+</body>
 </html>
