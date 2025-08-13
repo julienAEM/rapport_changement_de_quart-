@@ -68,6 +68,10 @@
 .status-btn.arr { background-color: red; }
 .status-btn.func { background-color: green; }
 .status-btn.selected { box-shadow: 0 0 0 3px #fff inset; }
+
+.status-btn.arr.selected { background-color: #ff6666; }
+.status-btn.func.selected { background-color: #66cc66; }
+.status-btn.selected { border: 2px solid #fff; }
 </style>
 </head>
 <body>
@@ -108,18 +112,6 @@
 <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
 <textarea id="resume_jour" name="resume_jour"></textarea>
 <!-- Insert each category section --><table class="team-table" id="categoryTable"><thead><tr><th>Catégorie</th><th>Consigne</th><th>Commentaires</th><th>État</th></tr></thead><tbody><tr data-category="Digestion"><td>Digestion</td><td><textarea id="digestion_consigne" name="digestion_consigne"></textarea></td><td><textarea id="digestion_commentaire" name="digestion_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Cristalisation"><td>Cristalisation</td><td><textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea></td><td><textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Centrifuge"><td>Centrifuge</td><td><textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea></td><td><textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Décomposition (Harpers)"><td>Décomposition (Harpers)</td><td><textarea id="decomposition_harpers_consigne" name="decomposition_harpers_consigne"></textarea></td><td><textarea id="decomposition_harpers_commentaire" name="decomposition_harpers_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Calcination (F04)"><td>Calcination (F04)</td><td><textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea></td><td><textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Lavage S02"><td>Lavage S02</td><td><textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea></td><td><textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Buhler"><td>Buhler</td><td><textarea id="buhler_consigne" name="buhler_consigne"></textarea></td><td><textarea id="buhler_commentaire" name="buhler_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="HP60 (Mega Pulse)"><td>HP60 (Mega Pulse)</td><td><textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea></td><td><textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Mini-Pulse"><td>Mini-Pulse</td><td><textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea></td><td><textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Fabrication de Puck"><td>Fabrication de Puck</td><td><textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea></td><td><textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr><tr data-category="Traitement des eaux"><td>Traitement des eaux</td><td><textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea></td><td><textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea></td><td><button class="status-btn arr" onclick="toggleStatus(this)" type="button">Arrêt</button><button class="status-btn func" onclick="toggleStatus(this)" type="button">Fonction</button></td></tr></tbody></table>
-
-
-
-
-
-
-
-
-
-
-
-
 <button type="submit">Envoyer</button>
 <button onclick="window.print()" type="button">Imprimer</button>
 <button id="sendEmailBtn" style="margin-top:1rem;background:var(--accent-color);color:var(--text-light);padding:0.6rem 1rem;border:none;border-radius:4px;cursor:pointer;" type="button">Envoyer par courriel</button></form>
