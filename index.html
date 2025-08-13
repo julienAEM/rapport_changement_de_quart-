@@ -97,6 +97,12 @@
       <option value="Vincent Lévesque">Vincent Lévesque</option>
       <option value="Olivier Chrétien">Olivier Chrétien</option>
     </select>
+
+    <label for="chef_equipe">Chef d'équipe :</label>
+    <select id="chef_equipe" name="chef_equipe">
+      <option value="">--Sélectionnez--</option>
+      <!-- options dynamiques -->
+    </select>
     <label for="quart">Quart :</label>
     <select id="quart" name="quart">
       <option value="">--Sélectionnez--</option>
@@ -154,6 +160,70 @@ document.addEventListener('DOMContentLoaded', function() {
     var today = new Date().toISOString().substr(0, 10);
     dateInput.value = today;
   }
+
+  // Charger la liste des chefs d'équipe depuis localStorage et remplir le sélecteur
+  var teamLeadSelect = document.getElementById('chef_equipe');
+  if (teamLeadSelect) {
+    var storedLeads = localStorage.getItem('teamLeadList') || '';
+    var defaultLeads = ['Jean Dupont','Marie Tremblay','Alain Gagnon','Sophie Lemaire'];
+    var leadsArray = [];
+    if (storedLeads.trim() !== '') {
+      leadsArray = storedLeads.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+    } else {
+      leadsArray = defaultLeads;
+    }
+    leadsArray.forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      teamLeadSelect.appendChild(opt);
+    });
+  }
+
+  // Charger la liste des superviseurs depuis localStorage et remplir le sélecteur
+  var supervisorSelect = document.getElementById('superviseur');
+  if (supervisorSelect) {
+    var storedSup = localStorage.getItem('supervisorList') || '';
+    var defaultSup = ['Vincent Lévesque','Olivier Chrétien'];
+    var supArray = [];
+    if (storedSup.trim() !== '') {
+      supArray = storedSup.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+    } else {
+      supArray = defaultSup;
+    }
+    // Supprimer options existantes sauf placeholder
+    while (supervisorSelect.options.length > 1) {
+      supervisorSelect.remove(1);
+    }
+    supArray.forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      supervisorSelect.appendChild(opt);
+    });
+  }
+
+  // Charger la liste des quarts depuis localStorage et remplir le sélecteur
+  var shiftSelect = document.getElementById('quart');
+  if (shiftSelect) {
+    var storedShift = localStorage.getItem('shiftList') || '';
+    var defaultShift = ['Jour','Nuit'];
+    var shiftArray = [];
+    if (storedShift.trim() !== '') {
+      shiftArray = storedShift.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+    } else {
+      shiftArray = defaultShift;
+    }
+    while (shiftSelect.options.length > 1) {
+      shiftSelect.remove(1);
+    }
+    shiftArray.forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      shiftSelect.appendChild(opt);
+    });
+  }
 });
 
 // Sélection d'état pour chaque ligne
@@ -180,6 +250,10 @@ function generatePdf(report) {
   y += 8;
   doc.setFontSize(12);
   doc.text('Date: ' + report.date, 10, y); y += 6;
+  // Afficher le chef d'équipe si présent
+  if (report.chef_equipe) {
+    doc.text("Chef d'équipe: " + report.chef_equipe, 10, y); y += 6;
+  }
   doc.text('Superviseur: ' + report.superviseur, 10, y); y += 6;
   doc.text('Quart: ' + report.quart, 10, y); y += 8;
   doc.setFontSize(11);
@@ -210,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Collecte des informations
       var date = document.getElementById('date_du_jour').value;
       var superviseur = document.getElementById('superviseur').value;
+      var chefEquipe = document.getElementById('chef_equipe') ? document.getElementById('chef_equipe').value : '';
       var quart = document.getElementById('quart').value;
       var evt_sst = document.getElementById('evt_sst').value;
       var evt_env = document.getElementById('evt_env').value;
@@ -218,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var report = {
         date: date,
         superviseur: superviseur,
+        chef_equipe: chefEquipe,
         quart: quart,
         evt_sst: evt_sst,
         evt_env: evt_env,
@@ -225,7 +301,11 @@ document.addEventListener('DOMContentLoaded', function() {
         resume_jour: resume_jour,
         categories: []
       };
-      var body = 'Superviseur: ' + superviseur + '\nQuart: ' + quart + '\nDate: ' + date + '\n\n';
+      var body = '';
+      if (chefEquipe) {
+        body += "Chef d'équipe: " + chefEquipe + '\n';
+      }
+      body += 'Superviseur: ' + superviseur + '\nQuart: ' + quart + '\nDate: ' + date + '\n\n';
       body += 'Événement SST: ' + evt_sst + '\n';
       body += 'Événement environnement et MDR: ' + evt_env + '\n';
       body += 'Travaux mécanique en cours: ' + travaux_mec + '\n';
