@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--
+  Page de consultation des rapports multi-types.
+  Cette version améliore la page de recherche existante en ajoutant un filtrage
+  par type de rapport (changement de quart pour superviseur ou salle de contrôle,
+  et changement de rotation pour superviseur ou salle de contrôle). Chaque type
+  est stocké dans une clé distincte de localStorage : `rapports` pour les
+  changements de quart des superviseurs, `rapportsControl` pour les changements
+  de quart de la salle de contrôle, `rotationsSuperviseur` pour les rotations
+  des superviseurs et `rotationsControl` pour les rotations de la salle de
+  contrôle. L’utilisateur peut sélectionner le type de rapport à consulter
+  puis filtrer par date et texte libre. Les résultats sont affichés dans un
+  tableau.
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Recherche de rapports multi-types</title>
+  <style>
+    :root {
+      --primary-color: #253746;
+      --secondary-color: #324e67;
+      --accent-color: #0078C8;
+      --text-light: #ffffff;
+      --field-bg: #f5f5f5;
+    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: var(--primary-color); color: var(--text-light); }
+    .wrapper { max-width: 1000px; margin: 2rem auto; background: var(--secondary-color); border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); overflow: hidden; }
+    .header { background: var(--primary-color); padding: 1rem 2rem; display: flex; align-items: center; border-bottom: 3px solid var(--accent-color); }
+    .header img { height: 50px; margin-right: 1rem; }
+    .header h1 { font-size: 1.5rem; margin: 0; color: var(--text-light); }
+    .nav-buttons { display: flex; justify-content: center; gap: 1rem; margin: 1rem; }
+    .nav-button { display: inline-block; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border-radius: 4px; text-decoration: none; font-size: 1rem; }
+    .nav-button:hover { background: #005fa0; }
+    .content { padding: 2rem; }
+    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: 0.3rem; font-weight: bold; }
+    input[type="date"], select, input[type="text"] { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; background: var(--field-bg); color: #333; box-sizing: border-box; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ddd; padding: 0.6rem; text-align: left; }
+    th { background: var(--accent-color); color: var(--text-light); }
+    .no-results { text-align: center; padding: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <img src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" alt="Logo AEM">
+      <h1>Recherche de rapports</h1>
+    </div>
+    <div class="nav-buttons">
+      <a href="index.html" class="nav-button">Retour à l'accueil</a>
+    </div>
+    <div class="content">
+      <form id="searchForm">
+        <div>
+          <label for="reportType">Type de rapport :</label>
+          <select id="reportType" name="reportType">
+            <option value="quart_superviseur">Changement de quart (superviseur)</option>
+            <option value="quart_control">Changement de quart (salle de contrôle)</option>
+            <option value="rotation_superviseur">Changement de rotation (superviseur)</option>
+            <option value="rotation_control">Changement de rotation (salle de contrôle)</option>
+          </select>
+        </div>
+        <div>
+          <label for="date_debut">Date début :</label>
+          <input type="date" id="date_debut" name="date_debut">
+        </div>
+        <div>
+          <label for="date_fin">Date fin :</label>
+          <input type="date" id="date_fin" name="date_fin">
+        </div>
+        <div style="grid-column: span 3;">
+          <label for="texte">Recherche texte :</label>
+          <input type="text" id="texte" name="texte">
+        </div>
+        <div style="grid-column: span 3; text-align: right;">
+          <button type="submit" style="padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Rechercher</button>
+        </div>
+      </form>
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Responsable</th>
+            <th>Type</th>
+            <th>Catégorie</th>
+            <th>Commentaires</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="no-results"><td colspan="5">Aucun résultat pour le moment.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Mappage entre le type sélectionné et la clé localStorage
+      var keyMap = {
+        'quart_superviseur': 'rapports',
+        'quart_control': 'rapportsControl',
+        'rotation_superviseur': 'rotationsSuperviseur',
+        'rotation_control': 'rotationsControl'
+      };
+
+      var typeSelect = document.getElementById('reportType');
+      var searchForm = document.getElementById('searchForm');
+      var resultsTable = document.getElementById('resultsTable');
+
+      // Fonction pour aplatir les rapports en entrées individuelles
+      function flattenReports(arr, type) {
+        var flat = [];
+        (arr || []).forEach(function(r) {
+          // Certaines formes de rapport peuvent ne pas avoir de liste de catégories
+          var cats = r.categories || [];
+          if (cats.length === 0) {
+            // Ajouter une seule entrée vide si aucune catégorie détaillée n'est présente
+            flat.push({
+              date: r.date || '',
+              responsable: r.superviseur || r.operateur || '',
+              type: type,
+              categorie: '',
+              commentaire: r.resume_jour || r.evt_sst || r.evt_env || ''
+            });
+          } else {
+            cats.forEach(function(cat) {
+              flat.push({
+                date: r.date || '',
+                responsable: r.superviseur || r.operateur || '',
+                type: type,
+                categorie: cat.categorie || '',
+                commentaire: cat.commentaire || ''
+              });
+            });
+          }
+        });
+        return flat;
+      }
+
+      // Afficher les lignes
+      function renderRows(items) {
+        var tbody = resultsTable.querySelector('tbody');
+        tbody.innerHTML = '';
+        if (!items || items.length === 0) {
+          var tr = document.createElement('tr');
+          tr.className = 'no-results';
+          var td = document.createElement('td');
+          td.colSpan = 5;
+          td.textContent = 'Aucun résultat pour le moment.';
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+          return;
+        }
+        items.forEach(function(item) {
+          var tr = document.createElement('tr');
+          var tdDate = document.createElement('td'); tdDate.textContent = item.date; tr.appendChild(tdDate);
+          var tdResp = document.createElement('td'); tdResp.textContent = item.responsable; tr.appendChild(tdResp);
+          var tdType = document.createElement('td'); tdType.textContent = item.type; tr.appendChild(tdType);
+          var tdCat = document.createElement('td'); tdCat.textContent = item.categorie; tr.appendChild(tdCat);
+          var tdComm = document.createElement('td'); tdComm.textContent = item.commentaire; tr.appendChild(tdComm);
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Charger et afficher initialement selon le type sélectionné
+      function loadAndDisplay() {
+        var selectedType = typeSelect.value;
+        var key = keyMap[selectedType] || 'rapports';
+        var stored = localStorage.getItem(key);
+        var data = stored ? JSON.parse(stored) : [];
+        var flat = flattenReports(data, selectedType);
+        renderRows(flat);
+      }
+
+      // Exécuter la recherche avec filtres
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var dateDebut = document.getElementById('date_debut').value;
+        var dateFin = document.getElementById('date_fin').value;
+        var texteSel = document.getElementById('texte').value.toLowerCase();
+        var selectedType = typeSelect.value;
+        var key = keyMap[selectedType] || 'rapports';
+        var stored = localStorage.getItem(key);
+        var data = stored ? JSON.parse(stored) : [];
+        var flat = flattenReports(data, selectedType);
+        var results = [];
+        flat.forEach(function(it) {
+          // Filtre date
+          if (dateDebut && it.date < dateDebut) return;
+          if (dateFin && it.date > dateFin) return;
+          // Filtre texte (responsable, categorie, commentaire)
+          var searchSpace = (it.responsable + ' ' + it.categorie + ' ' + it.commentaire).toLowerCase();
+          if (texteSel && searchSpace.indexOf(texteSel) === -1) return;
+          results.push(it);
+        });
+        renderRows(results);
+      });
+
+      // Changer de type déclenche le rechargement des données
+      typeSelect.addEventListener('change', loadAndDisplay);
+
+      // Chargement initial
+      loadAndDisplay();
+    });
+  </script>
+</body>
+</html>
