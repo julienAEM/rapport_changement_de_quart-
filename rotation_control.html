@@ -248,7 +248,36 @@
       }
     });
     document.getElementById('envoyer').addEventListener('click', function() {
-      alert('Le rapport a été enregistré. La fonctionnalité d\'envoi sera intégrée ultérieurement.');
+      // Construire l'objet de rapport pour la rotation salle de contrôle
+      var operateur = document.getElementById('operateur').value;
+      var rotationVal = document.getElementById('rotation').value;
+      var dateVal = document.getElementById('date').value;
+      var evtSst = document.getElementById('evt_sst').value;
+      var evtEnv = document.getElementById('evt_env').value;
+      var travaux = document.getElementById('travaux').value;
+      var cats = [];
+      var rows = document.querySelectorAll('#categoryTable tbody tr');
+      rows.forEach(function(row) {
+        var catName = row.getAttribute('data-category');
+        var consigne = row.querySelector('textarea[name$="_consigne"]').value;
+        var commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
+        var selectedBtn = row.querySelector('.status-btn.selected');
+        var etat = selectedBtn ? selectedBtn.textContent : '';
+        cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
+      });
+      var report = { operateur: operateur, rotation: rotationVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+      try {
+        var existing = localStorage.getItem('rotationsControl');
+        var arr = existing ? JSON.parse(existing) : [];
+        arr.push(report);
+        localStorage.setItem('rotationsControl', JSON.stringify(arr));
+        alert('Rapport enregistré.');
+      } catch (e) {
+        console.error('Erreur lors de l\'enregistrement : ', e);
+        alert('Une erreur est survenue lors de l\'enregistrement.');
+      }
+      // Réinitialiser le formulaire si nécessaire
+      // document.querySelector('form').reset();
     });
   </script>
 </body>
