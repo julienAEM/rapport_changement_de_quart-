@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-
 <!--
-  Ce fichier est une version modifiée de la page d'administration originale.
-  Il ajoute la possibilité de définir une liste d'adresses courriel à utiliser
-  lors de l'envoi automatique des rapports depuis la page principale. Les
-  courriels sont sauvegardés dans localStorage afin d'être récupérés par
-  index.html lors de l'envoi d'un rapport.
+  Version étendue de la page d'administration permettant, en plus de gérer les
+  listes et le code d'accès, de réinitialiser la base de données des rapports.
+  Lorsque l'administrateur clique sur le bouton de réinitialisation, toutes
+  les clés localStorage utilisées pour enregistrer les rapports (rapports,
+  rapportsControl, rotationsSuperviseur et rotationsControl) sont supprimées
+  après confirmation. Cette opération supprime uniquement les données de
+  rapport et ne touche pas aux listes de superviseurs, chefs d'équipe, quarts
+  et courriels.
 -->
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Administration – Gestion des listes</title>
+  <title>Administration – Gestion des listes et base de données</title>
   <style>
     :root {
       --primary-color: #253746;
@@ -26,122 +28,114 @@
     textarea { width: 100%; height: 120px; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; background: var(--field-bg); color: #333; }
     input[type="password"] { width:100%; padding:0.6rem; border:1px solid #ccc; border-radius:4px; background: var(--field-bg); color:#333; }
     button { margin-top: 1rem; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #005fa0; }
   </style>
 </head>
 <body>
-<div class="wrapper" id="adminContent" class="hidden">
-  <h1>Administration – Gestion des listes</h1>
-  <p>Modifiez ci-dessous les listes utilisées pour les menus déroulants du site. Chaque valeur doit être sur une nouvelle ligne.</p>
-
-  <!-- La liste des employés et des statuts a été supprimée -->
-
-  <!-- Nouvelle liste pour les chefs d'équipe -->
-  <label for="teamLeadList">Liste des chefs d'équipe :</label>
-  <!-- Les valeurs initiales sont fournies à titre indicatif. La liste est sauvegardée dans localStorage sous la clé 'teamLeadList'. -->
-  <textarea id="teamLeadList">Jean Dupont
+  <div id="adminContent" class="wrapper" style="display:none;">
+    <h1>Administration – Gestion des listes et base de données</h1>
+    <p>Modifiez ci-dessous les listes utilisées pour les menus déroulants du site. Chaque valeur doit être sur une nouvelle ligne.</p>
+    <label for="teamLeadList">Liste des chefs d'équipe :</label>
+    <textarea id="teamLeadList">Jean Dupont
 Marie Tremblay
 Alain Gagnon
 Sophie Lemaire</textarea>
-  <button type="button" onclick="saveTeamLeadList()">Enregistrer la liste des chefs d'équipe</button>
-
-  <label for="supervisorList">Liste des superviseurs :</label>
-  <textarea id="supervisorList">Vincent Lévesque
+    <button type="button" onclick="saveTeamLeadList()">Enregistrer la liste des chefs d'équipe</button>
+    <label for="supervisorList">Liste des superviseurs :</label>
+    <textarea id="supervisorList">Vincent Lévesque
 Olivier Chrétien</textarea>
-  <button type="button" onclick="saveSupervisorList()">Enregistrer la liste des superviseurs</button>
-
-  <label for="shiftList">Liste des quarts :</label>
-  <textarea id="shiftList">Jour
+    <button type="button" onclick="saveSupervisorList()">Enregistrer la liste des superviseurs</button>
+    <label for="shiftList">Liste des quarts :</label>
+    <textarea id="shiftList">Jour
 Nuit</textarea>
-  <button type="button" onclick="saveShiftList()">Enregistrer la liste des quarts</button>
-
-  <!-- Nouvelle section pour gérer la liste des courriels -->
-  <h2>Liste des destinataires pour l'envoi des rapports</h2>
-  <p>Entrez les adresses courriel auxquelles les rapports doivent être envoyés automatiquement, séparées par des points-virgules ou des retours à la ligne.</p>
-  <label for="emailList">Adresses courriel :</label>
-  <textarea id="emailList"></textarea>
-  <button type="button" onclick="saveEmailList()">Enregistrer les courriels</button>
-
-  <h2>Modifier le code d’accès</h2>
-  <label for="newPassword">Nouveau code :</label>
-  <input type="password" id="newPassword">
-  <button type="button" onclick="updatePassword()">Enregistrer</button>
-
-</div>
-<div id="accessDenied" class="wrapper hidden">
-  <h1>Accès refusé</h1>
-  <p>Vous n'avez pas l'autorisation d'accéder à cette page.</p>
-</div>
-<script>
-// Mot de passe administrateur et affichage conditionnel
-document.addEventListener('DOMContentLoaded', function() {
-  var storedPwd = localStorage.getItem('adminPassword') || 'admin';
-  var pwd = prompt('Veuillez entrer le mot de passe administrateur :');
-  if (pwd === storedPwd) {
-    document.getElementById('adminContent').style.display = 'block';
-    // Charger la liste des courriels enregistrée
-    var storedEmails = localStorage.getItem('emailList') || '';
-    document.getElementById('emailList').value = storedEmails;
-
-    // Charger la liste des superviseurs enregistrée
-    var storedSupList = localStorage.getItem('supervisorList');
-    if (storedSupList !== null) {
-      document.getElementById('supervisorList').value = storedSupList;
+    <button type="button" onclick="saveShiftList()">Enregistrer la liste des quarts</button>
+    <h2>Liste des destinataires pour l'envoi des rapports</h2>
+    <p>Entrez les adresses courriel auxquelles les rapports doivent être envoyés automatiquement, séparées par des points-virgules ou des retours à la ligne.</p>
+    <label for="emailList">Adresses courriel :</label>
+    <textarea id="emailList"></textarea>
+    <button type="button" onclick="saveEmailList()">Enregistrer les courriels</button>
+    <h2>Modifier le code d’accès</h2>
+    <label for="newPassword">Nouveau code :</label>
+    <input type="password" id="newPassword">
+    <button type="button" onclick="updatePassword()">Enregistrer</button>
+    <h2>Réinitialiser la base de données des rapports</h2>
+    <p>Cette opération supprimera toutes les données de rapport enregistrées (changement de quart et de rotation, superviseur et salle de contrôle). Les listes de noms et courriels ne seront pas affectées.</p>
+    <button type="button" onclick="resetReports()">Réinitialiser les rapports</button>
+  </div>
+  <div id="accessDenied" class="wrapper" style="display:none;">
+    <h1>Accès refusé</h1>
+    <p>Vous n'avez pas l'autorisation d'accéder à cette page.</p>
+  </div>
+  <script>
+    // Afficher le contenu administrateur après vérification du mot de passe
+    document.addEventListener('DOMContentLoaded', function() {
+      var storedPwd = localStorage.getItem('adminPassword') || 'admin';
+      var pwd = prompt('Veuillez entrer le mot de passe administrateur :');
+      if (pwd === storedPwd) {
+        document.getElementById('adminContent').style.display = 'block';
+        // Charger les listes sauvegardées
+        var storedEmails = localStorage.getItem('emailList') || '';
+        document.getElementById('emailList').value = storedEmails;
+        var storedSupList = localStorage.getItem('supervisorList');
+        if (storedSupList !== null) {
+          document.getElementById('supervisorList').value = storedSupList;
+        }
+        var storedShiftList = localStorage.getItem('shiftList');
+        if (storedShiftList !== null) {
+          document.getElementById('shiftList').value = storedShiftList;
+        }
+        var storedTeamLeads = localStorage.getItem('teamLeadList');
+        if (storedTeamLeads !== null) {
+          document.getElementById('teamLeadList').value = storedTeamLeads;
+        }
+      } else {
+        document.getElementById('accessDenied').style.display = 'block';
+      }
+    });
+    // Enregistrer un nouveau mot de passe
+    function updatePassword() {
+      var newPwd = document.getElementById('newPassword').value;
+      if (newPwd) {
+        localStorage.setItem('adminPassword', newPwd);
+        alert('Nouveau code enregistré.');
+      } else {
+        alert('Veuillez saisir un nouveau code.');
+      }
     }
-
-    // Charger la liste des quarts enregistrée
-    var storedShiftList = localStorage.getItem('shiftList');
-    if (storedShiftList !== null) {
-      document.getElementById('shiftList').value = storedShiftList;
+    // Sauvegarder la liste des courriels dans localStorage
+    function saveEmailList() {
+      var emails = document.getElementById('emailList').value.trim();
+      localStorage.setItem('emailList', emails);
+      alert('Liste des courriels enregistrée.');
     }
-
-    // Charger la liste des chefs d'équipe enregistrée
-    var storedTeamLeads = localStorage.getItem('teamLeadList');
-    if (storedTeamLeads !== null) {
-      document.getElementById('teamLeadList').value = storedTeamLeads;
+    // Sauvegarder la liste des superviseurs
+    function saveSupervisorList() {
+      var sup = document.getElementById('supervisorList').value.trim();
+      localStorage.setItem('supervisorList', sup);
+      alert('Liste des superviseurs enregistrée.');
     }
-  } else {
-    document.getElementById('accessDenied').style.display = 'block';
-  }
-});
-
-// Enregistrer un nouveau mot de passe
-function updatePassword() {
-  var newPwd = document.getElementById('newPassword').value;
-  if (newPwd) {
-    localStorage.setItem('adminPassword', newPwd);
-    alert('Nouveau code enregistré.');
-  } else {
-    alert('Veuillez saisir un nouveau code.');
-  }
-}
-
-// Sauvegarder la liste des courriels dans localStorage
-function saveEmailList() {
-  var emails = document.getElementById('emailList').value.trim();
-  localStorage.setItem('emailList', emails);
-  alert('Liste des courriels enregistrée.');
-}
-
-// Sauvegarder la liste des superviseurs
-function saveSupervisorList() {
-  var sup = document.getElementById('supervisorList').value.trim();
-  localStorage.setItem('supervisorList', sup);
-  alert('Liste des superviseurs enregistrée.');
-}
-
-// Sauvegarder la liste des quarts
-function saveShiftList() {
-  var shift = document.getElementById('shiftList').value.trim();
-  localStorage.setItem('shiftList', shift);
-  alert('Liste des quarts enregistrée.');
-}
-
-// Sauvegarder la liste des chefs d'équipe dans localStorage
-function saveTeamLeadList() {
-  var leads = document.getElementById('teamLeadList').value.trim();
-  localStorage.setItem('teamLeadList', leads);
-  alert("Liste des chefs d'équipe enregistrée.");
-}
-</script>
+    // Sauvegarder la liste des quarts
+    function saveShiftList() {
+      var shift = document.getElementById('shiftList').value.trim();
+      localStorage.setItem('shiftList', shift);
+      alert('Liste des quarts enregistrée.');
+    }
+    // Sauvegarder la liste des chefs d'équipe
+    function saveTeamLeadList() {
+      var leads = document.getElementById('teamLeadList').value.trim();
+      localStorage.setItem('teamLeadList', leads);
+      alert("Liste des chefs d'équipe enregistrée.");
+    }
+    // Réinitialiser toutes les listes de rapports (ne supprime pas les listes de noms ou le mot de passe)
+    function resetReports() {
+      if (confirm('Êtes-vous sûr de vouloir supprimer toutes les données de rapport ? Cette action est irréversible.')) {
+        localStorage.removeItem('rapports');
+        localStorage.removeItem('rapportsControl');
+        localStorage.removeItem('rotationsSuperviseur');
+        localStorage.removeItem('rotationsControl');
+        alert('Les données de rapport ont été supprimées.');
+      }
+    }
+  </script>
 </body>
 </html>
