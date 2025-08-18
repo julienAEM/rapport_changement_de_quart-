@@ -50,11 +50,12 @@
     </div>
     <div class="nav-buttons">
       <a href="index.html" class="nav-button">Retour à l'accueil</a>
+      <a href="#" class="nav-button" onclick="window.history.back(); return false;">Retour au rapport en cours</a>
     </div>
     <div class="content">
       <form id="searchForm">
         <div>
-          <label for="reportType">Type de rapport :</label>
+          <label for="reportType">Type de rapport&nbsp;:</label>
           <select id="reportType" name="reportType">
             <option value="quart_superviseur">Changement de quart (superviseur)</option>
             <option value="quart_control">Changement de quart (salle de contrôle)</option>
@@ -63,15 +64,49 @@
           </select>
         </div>
         <div>
-          <label for="date_debut">Date début :</label>
+          <label for="date_debut">Date début&nbsp;:</label>
           <input type="date" id="date_debut" name="date_debut">
         </div>
         <div>
-          <label for="date_fin">Date fin :</label>
-          <input type="date" id="date_fin" name="date_fin">
+          <label for="superviseur_sel">Superviseur&nbsp;:</label>
+          <select id="superviseur_sel" name="superviseur_sel">
+            <option value="">--Tous--</option>
+            <option value="Vincent Lévesque">Vincent Lévesque</option>
+            <option value="Olivier Chrétien">Olivier Chrétien</option>
+          </select>
+        </div>
+        <div>
+          <label for="quart_sel">Quart&nbsp;:</label>
+          <select id="quart_sel" name="quart_sel">
+            <option value="">--Tous--</option>
+            <option value="Jour">Jour</option>
+            <option value="Nuit">Nuit</option>
+          </select>
+        </div>
+        <div>
+          <label for="secteur_sel">Secteur&nbsp;:</label>
+          <select id="secteur_sel" name="secteur_sel">
+            <option value="">--Tous--</option>
+            <option value="Digestion">Digestion</option>
+            <option value="Cristalisation">Cristalisation</option>
+            <option value="Centrifuge">Centrifuge</option>
+            <option value="Décomposition (Harpers)">Décomposition (Harpers)</option>
+            <option value="Calcination (F04)">Calcination (F04)</option>
+            <option value="Lavage S02">Lavage S02</option>
+            <option value="Buhler">Buhler</option>
+            <option value="HP60 (Mega Pulse)">HP60 (Mega Pulse)</option>
+            <option value="Mini-Pulse">Mini-Pulse</option>
+            <option value="Fabrication de Puck">Fabrication de Puck</option>
+            <option value="Traitement des eaux">Traitement des eaux</option>
+            <option value="Commentaire générale">Commentaire générale</option>
+          </select>
+        </div>
+        <div>
+          <label for="operateur_sel">Opérateur&nbsp;:</label>
+          <input type="text" id="operateur_sel" name="operateur_sel" placeholder="Nom de l'opérateur">
         </div>
         <div style="grid-column: span 3;">
-          <label for="texte">Recherche texte :</label>
+          <label for="texte">Recherche texte&nbsp;:</label>
           <input type="text" id="texte" name="texte">
         </div>
         <div style="grid-column: span 3; text-align: right;">
@@ -112,16 +147,17 @@
       function flattenReports(arr, type) {
         var flat = [];
         (arr || []).forEach(function(r) {
-          // Certaines formes de rapport peuvent ne pas avoir de liste de catégories
           var cats = r.categories || [];
+          // Valeur de quart ou rotation (pour filtrage)
+          var quartVal = r.quart || r.rotation || '';
           if (cats.length === 0) {
-            // Ajouter une seule entrée vide si aucune catégorie détaillée n'est présente
             flat.push({
               date: r.date || '',
               responsable: r.superviseur || r.operateur || '',
               type: type,
+              quart: quartVal,
               categorie: '',
-              commentaire: r.resume_jour || r.evt_sst || r.evt_env || ''
+              commentaire: r.resume_jour || r.evt_sst || r.evt_env || r.travaux || ''
             });
           } else {
             cats.forEach(function(cat) {
@@ -129,6 +165,7 @@
                 date: r.date || '',
                 responsable: r.superviseur || r.operateur || '',
                 type: type,
+                quart: quartVal,
                 categorie: cat.categorie || '',
                 commentaire: cat.commentaire || ''
               });
@@ -177,7 +214,10 @@
       searchForm.addEventListener('submit', function(e) {
         e.preventDefault();
         var dateDebut = document.getElementById('date_debut').value;
-        var dateFin = document.getElementById('date_fin').value;
+        var supSel = document.getElementById('superviseur_sel').value;
+        var quartSel = document.getElementById('quart_sel').value;
+        var secteurSel = document.getElementById('secteur_sel').value;
+        var opSel = document.getElementById('operateur_sel').value.toLowerCase();
         var texteSel = document.getElementById('texte').value.toLowerCase();
         var selectedType = typeSelect.value;
         var key = keyMap[selectedType] || 'rapports';
@@ -186,10 +226,17 @@
         var flat = flattenReports(data, selectedType);
         var results = [];
         flat.forEach(function(it) {
-          // Filtre date
+          // Date de début (aucune date de fin)
           if (dateDebut && it.date < dateDebut) return;
-          if (dateFin && it.date > dateFin) return;
-          // Filtre texte (responsable, categorie, commentaire)
+          // Filtre superviseur (ou responsable)
+          if (supSel && it.responsable !== supSel) return;
+          // Filtre quart ou rotation
+          if (quartSel && it.quart !== quartSel) return;
+          // Filtre secteur (catégorie)
+          if (secteurSel && it.categorie !== secteurSel) return;
+          // Filtre opérateur (sous-chaîne dans le nom du responsable)
+          if (opSel && it.responsable.toLowerCase().indexOf(opSel) === -1) return;
+          // Filtre texte libre (responsable, catégorie, commentaire)
           var searchSpace = (it.responsable + ' ' + it.categorie + ' ' + it.commentaire).toLowerCase();
           if (texteSel && searchSpace.indexOf(texteSel) === -1) return;
           results.push(it);
