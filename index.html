@@ -61,7 +61,14 @@
   <a href="rotation_superviseur.html" class="nav-button">Rotation (superviseur)</a>
   <a href="rotation_control.html" class="nav-button">Rotation (salle de contrôle)</a>
   <a href="rapport_multi_search.html" class="nav-button">Consulter les rapports (base de données)</a>
-  <a href="admin.html" class="nav-button">Admin</a>
+<select id="resumeLinks" onchange="if(this.value) location.href=this.value;" style="margin-top:1rem; padding:0.7rem; border-radius:4px;">
+  <option value="">— Consulter un rapport en cours —</option>
+  <option value="nouveau_quart_superviseur.html">Changement de quart (superviseur)</option>
+  <option value="quart_control.html">Changement de quart (salle de contrôle)</option>
+  <option value="rotation_superviseur.html">Changement de rotation (superviseur)</option>
+  <option value="rotation_control.html">Changement de rotation (salle de contrôle)</option>
+</select>
+      <a href="admin.html" class="nav-button">Admin</a>
     </div>
   </div>
 </body>
