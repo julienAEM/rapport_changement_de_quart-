@@ -134,10 +134,10 @@
       <textarea id="evt_sst" name="evt_sst"></textarea>
       <label for="evt_env">Événement environnement et MDR :</label>
       <textarea id="evt_env" name="evt_env"></textarea>
-      <label for="travaux_mec">Travaux mécanique en cours :</label>
-      <textarea id="travaux_mec" name="travaux_mec"></textarea>
-      <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
-      <textarea id="resume_jour" name="resume_jour"></textarea>
+      <!-- Suppression du champ travaux mécanique et remplacement par un résumé complet de la journée.
+           Ce champ permet au superviseur d'indiquer les tâches accomplies pendant le quart. -->
+      <label for="resume">Résumé de la journée :</label>
+      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
       <table class="team-table" id="categoryTable">
         <thead>
           <tr>
@@ -362,8 +362,8 @@
       var dateVal = document.getElementById('date').value;
       var evtSst = document.getElementById('evt_sst').value;
       var evtEnv = document.getElementById('evt_env').value;
-      var travaux = document.getElementById('travaux_mec').value;
-      var resume = document.getElementById('resume_jour').value;
+      // Le champ travaux mécanique a été supprimé au profit d'un résumé complet de la journée
+      var resume = document.getElementById('resume').value;
       var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
@@ -374,7 +374,7 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, travaux_mec: travaux, resume_jour: resume, categories: cats };
+      return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, resume: resume, categories: cats };
     }
     // Enregistrer le brouillon actuel pour revenir plus tard
     function saveDraft() {
@@ -398,8 +398,8 @@
           if (document.getElementById('date')) document.getElementById('date').value = draft.date || '';
           if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
           if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
-          if (document.getElementById('travaux_mec')) document.getElementById('travaux_mec').value = draft.travaux_mec || '';
-          if (document.getElementById('resume_jour')) document.getElementById('resume_jour').value = draft.resume_jour || '';
+          // Le champ travaux mécanique est obsolète; charger uniquement le résumé s'il existe
+          if (document.getElementById('resume')) document.getElementById('resume').value = draft.resume || '';
           // Remplir les catégories
           (draft.categories || []).forEach(function(cat) {
             var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
@@ -454,8 +454,8 @@
       body += 'Date: ' + report.date + '\n\n';
       body += 'Événement SST: ' + report.evt_sst + '\n';
       body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
-      body += 'Travaux mécanique en cours: ' + report.travaux_mec + '\n';
-      body += 'Résumé journée/nuit: ' + report.resume_jour + '\n\n';
+      // Le champ travaux mécanique est supprimé; inclure plutôt le résumé de la journée
+      body += 'Résumé de la journée: ' + report.resume + '\n\n';
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
         body += cat.categorie + '\n';
