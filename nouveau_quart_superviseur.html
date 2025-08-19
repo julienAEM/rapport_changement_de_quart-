@@ -327,6 +327,20 @@
           shiftSelect.appendChild(opt);
         });
       }
+
+      // Charger un brouillon existant après avoir rempli les listes
+      loadDraft();
+
+      // Mettre en place la sauvegarde automatique du brouillon à chaque modification
+      var inputs = document.querySelectorAll('input, textarea, select');
+      inputs.forEach(function(el) {
+        el.addEventListener('input', function() {
+          saveDraft();
+        });
+        el.addEventListener('change', function() {
+          saveDraft();
+        });
+      });
     });
     // Fonction pour basculer l'état d'une ligne
     function toggleStatus(btn) {
@@ -336,6 +350,9 @@
       btn.classList.add('selected');
       var span = container.querySelector('.state-text');
       span.textContent = btn.textContent;
+
+      // Mettre à jour le brouillon après modification de l'état
+      saveDraft();
     }
     // Collecte des données du formulaire
     function collectReportData() {
@@ -359,6 +376,56 @@
       });
       return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, travaux_mec: travaux, resume_jour: resume, categories: cats };
     }
+    // Enregistrer le brouillon actuel pour revenir plus tard
+    function saveDraft() {
+      var draft = collectReportData();
+      try {
+        localStorage.setItem('draft_quart_superviseur', JSON.stringify(draft));
+      } catch (e) {
+        console.error('Erreur lors de l\'enregistrement du brouillon : ', e);
+      }
+    }
+    // Charger un brouillon s'il existe et préremplir le formulaire
+    function loadDraft() {
+      try {
+        var stored = localStorage.getItem('draft_quart_superviseur');
+        if (stored) {
+          var draft = JSON.parse(stored);
+          // Remplir les champs principaux
+          if (document.getElementById('superviseur')) document.getElementById('superviseur').value = draft.superviseur || '';
+          if (document.getElementById('chef_equipe')) document.getElementById('chef_equipe').value = draft.chef_equipe || '';
+          if (document.getElementById('quart')) document.getElementById('quart').value = draft.quart || '';
+          if (document.getElementById('date')) document.getElementById('date').value = draft.date || '';
+          if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
+          if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
+          if (document.getElementById('travaux_mec')) document.getElementById('travaux_mec').value = draft.travaux_mec || '';
+          if (document.getElementById('resume_jour')) document.getElementById('resume_jour').value = draft.resume_jour || '';
+          // Remplir les catégories
+          (draft.categories || []).forEach(function(cat) {
+            var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
+            if (row) {
+              var consigneArea = row.querySelector('textarea[name$="_consigne"]');
+              var commentaireArea = row.querySelector('textarea[name$="_commentaire"]');
+              if (consigneArea) consigneArea.value = cat.consigne || '';
+              if (commentaireArea) commentaireArea.value = cat.commentaire || '';
+              var btns = row.querySelectorAll('.status-btn');
+              btns.forEach(function(b) { b.classList.remove('selected'); });
+              if (cat.etat) {
+                btns.forEach(function(b) {
+                  if (b.textContent === cat.etat) {
+                    b.classList.add('selected');
+                    var span = row.querySelector('.state-text');
+                    if (span) span.textContent = cat.etat;
+                  }
+                });
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement du brouillon : ', e);
+      }
+    }
     // Enregistrer dans localStorage
     function saveReport() {
       var report = collectReportData();
@@ -368,6 +435,8 @@
         arr.push(report);
         localStorage.setItem('rapports', JSON.stringify(arr));
         alert('Rapport enregistré dans la base de données.');
+        // Suppression du brouillon puisque le rapport est désormais enregistré
+        localStorage.removeItem('draft_quart_superviseur');
       } catch (e) {
         console.error('Erreur lors de l\'enregistrement : ', e);
         alert('Une erreur est survenue lors de l\'enregistrement.');
@@ -400,6 +469,8 @@
       var subject = 'Plan de match - ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       window.location.href = mailtoLink;
+      // Supprimer le brouillon après l'envoi
+      localStorage.removeItem('draft_quart_superviseur');
     }
     // Écouteurs de boutons
     document.getElementById('saveBtn').addEventListener('click', function() { saveReport(); });
