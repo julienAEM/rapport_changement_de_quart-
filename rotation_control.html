@@ -86,9 +86,9 @@
       <h1>Changement de rotation – Salle de contrôle</h1>
     </div>
     <div class="link-buttons">
-  <a class="link-button" href="index.html">Retour vers Accueil</a>
-  <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
-</div>
+      <a class="link-button" href="index.html">Accueil</a>
+      <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
+    </div>
     <div class="form-content">
       <label for="operateur">Opérateur :</label>
       <input id="operateur" name="operateur" type="text" />
@@ -228,7 +228,11 @@
           </tr>
         </tbody>
       </table>
-      <button type="button" id="envoyer" style="margin-top:1rem; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Envoyer</button>
+      <div class="action-buttons" style="margin-top:1rem; display:flex; gap:1rem;">
+        <button type="button" id="saveBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Enregistrer</button>
+        <button type="button" id="emailBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Envoyer par courriel</button>
+        <button type="button" id="printBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Imprimer</button>
+      </div>
     </div>
   </div>
   <script>
@@ -247,8 +251,14 @@
         dateInput.value = today;
       }
     });
-    document.getElementById('envoyer').addEventListener('click', function() {
-      // Construire l'objet de rapport pour la rotation salle de contrôle
+    /**
+     * Collecte les valeurs saisies dans le formulaire et retourne un objet
+     * représentant le rapport de rotation en cours. Les champs comprennent
+     * l'opérateur, la rotation, la date, les événements SST et
+     * environnement/MDR, les travaux mécaniques et la liste des
+     * catégories avec leur consigne, commentaire et état.
+     */
+    function collectReportData() {
       var operateur = document.getElementById('operateur').value;
       var rotationVal = document.getElementById('rotation').value;
       var dateVal = document.getElementById('date').value;
@@ -265,20 +275,64 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      var report = { operateur: operateur, rotation: rotationVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+      return { operateur: operateur, rotation: rotationVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+    }
+
+    /**
+     * Enregistre le rapport actuel dans localStorage sous la clé
+     * "rotationsControl". Un message de confirmation est affiché en cas
+     * de succès et un message d'erreur s'affiche si l'enregistrement
+     * échoue.
+     */
+    function saveReport() {
+      var report = collectReportData();
       try {
         var existing = localStorage.getItem('rotationsControl');
         var arr = existing ? JSON.parse(existing) : [];
         arr.push(report);
         localStorage.setItem('rotationsControl', JSON.stringify(arr));
-        alert('Rapport enregistré.');
+        alert('Rapport enregistré dans la base de données.');
       } catch (e) {
         console.error('Erreur lors de l\'enregistrement : ', e);
         alert('Une erreur est survenue lors de l\'enregistrement.');
       }
-      // Réinitialiser le formulaire si nécessaire
-      // document.querySelector('form').reset();
-    });
+    }
+
+    /**
+     * Construit un courriel à partir des données du rapport et ouvre
+     * l'application de messagerie via un lien mailto. Avant l'envoi,
+     * les données sont enregistrées dans la base de données pour ne pas
+     * perdre les informations.
+     */
+    function sendEmail() {
+      var report = collectReportData();
+      // Enregistrer le rapport avant envoi
+      saveReport();
+      var body = 'Date: ' + report.date + '\n';
+      body += 'Opérateur: ' + report.operateur + '\n';
+      body += 'Rotation: ' + report.rotation + '\n\n';
+      body += 'Événement SST: ' + report.evt_sst + '\n';
+      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
+      body += 'Travaux mécanique en cours: ' + report.travaux + '\n\n';
+      body += 'Catégories:\n';
+      report.categories.forEach(function(cat) {
+        body += cat.categorie + '\n';
+        body += 'Consigne: ' + cat.consigne + '\n';
+        body += 'Commentaires: ' + cat.commentaire + '\n';
+        body += 'État: ' + cat.etat + '\n\n';
+      });
+      var emailListRaw = localStorage.getItem('emailList') || '';
+      var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
+      var toField = emailArray.join(',');
+      var subject = 'Plan de match - ' + report.date;
+      var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      window.location.href = mailtoLink;
+    }
+
+    // Attacher les écouteurs sur les nouveaux boutons
+    document.getElementById('saveBtn').addEventListener('click', function() { saveReport(); });
+    document.getElementById('emailBtn').addEventListener('click', function() { sendEmail(); });
+    document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
   </script>
 </body>
 </html>
