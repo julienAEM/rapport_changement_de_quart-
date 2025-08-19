@@ -250,6 +250,9 @@
       // Mettre à jour le texte d'état visible à l'impression
       var span = container.querySelector('.state-text');
       span.textContent = btn.textContent;
+
+      // Mettre à jour le brouillon après modification
+      saveDraft();
     }
     // Pré-remplir la date avec la date du jour
     document.addEventListener('DOMContentLoaded', function() {
@@ -258,6 +261,14 @@
         var today = new Date().toISOString().substr(0, 10);
         dateInput.value = today;
       }
+      // Charger un brouillon existant après initialisation de la date
+      loadDraft();
+      // Sauvegarder le brouillon à chaque modification de champ
+      var inputs = document.querySelectorAll('input, textarea, select');
+      inputs.forEach(function(el) {
+        el.addEventListener('input', function() { saveDraft(); });
+        el.addEventListener('change', function() { saveDraft(); });
+      });
     });
     // Enregistrer et envoyer (prototype)
     // Fonction pour collecter les données du formulaire
@@ -280,6 +291,53 @@
       });
       return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
     }
+    // Enregistrer le brouillon du quart salle de contrôle
+    function saveDraft() {
+      var draft = collectReportData();
+      try {
+        localStorage.setItem('draft_quart_control', JSON.stringify(draft));
+      } catch (e) {
+        console.error('Erreur lors de l\'enregistrement du brouillon : ', e);
+      }
+    }
+    // Charger un brouillon et pré-remplir le formulaire
+    function loadDraft() {
+      try {
+        var stored = localStorage.getItem('draft_quart_control');
+        if (stored) {
+          var draft = JSON.parse(stored);
+          if (document.getElementById('operateur')) document.getElementById('operateur').value = draft.operateur || '';
+          if (document.getElementById('quart')) document.getElementById('quart').value = draft.quart || '';
+          if (document.getElementById('date')) document.getElementById('date').value = draft.date || '';
+          if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
+          if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
+          if (document.getElementById('travaux')) document.getElementById('travaux').value = draft.travaux || '';
+          // Catégories
+          (draft.categories || []).forEach(function(cat) {
+            var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
+            if (row) {
+              var consigneArea = row.querySelector('textarea[name$="_consigne"]');
+              var commentaireArea = row.querySelector('textarea[name$="_commentaire"]');
+              if (consigneArea) consigneArea.value = cat.consigne || '';
+              if (commentaireArea) commentaireArea.value = cat.commentaire || '';
+              var btns = row.querySelectorAll('.status-btn');
+              btns.forEach(function(b) { b.classList.remove('selected'); });
+              if (cat.etat) {
+                btns.forEach(function(b) {
+                  if (b.textContent === cat.etat) {
+                    b.classList.add('selected');
+                    var span = row.querySelector('.state-text');
+                    if (span) span.textContent = cat.etat;
+                  }
+                });
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Erreur lors du chargement du brouillon : ', e);
+      }
+    }
     // Enregistrer dans localStorage uniquement
     function saveReport() {
       var report = collectReportData();
@@ -289,6 +347,8 @@
         arr.push(report);
         localStorage.setItem('rapportsControl', JSON.stringify(arr));
         alert('Rapport enregistré dans la base de données.');
+        // Supprimer le brouillon après l'enregistrement
+        localStorage.removeItem('draft_quart_control');
       } catch (e) {
         console.error('Erreur lors de l\'enregistrement : ', e);
         alert('Une erreur est survenue lors de l\'enregistrement.');
@@ -320,6 +380,8 @@
       var subject = 'Plan de match - ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       window.location.href = mailtoLink;
+      // Supprimer le brouillon après l'envoi
+      localStorage.removeItem('draft_quart_control');
     }
     document.getElementById('saveBtn').addEventListener('click', function() {
       saveReport();
