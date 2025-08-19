@@ -137,7 +137,7 @@
       <!-- Suppression du champ travaux mécanique et remplacement par un résumé complet de la journée.
            Ce champ permet au superviseur d'indiquer les tâches accomplies pendant le quart. -->
       <label for="resume">Résumé de la journée :</label>
-      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
+      <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <table class="team-table" id="categoryTable">
         <thead>
           <tr>
@@ -268,6 +268,11 @@
     </div>
   </div>
   <script>
+    // Ajustement automatique de la hauteur du champ résumé en fonction de son contenu
+    function autoGrow(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
     // Définir la date par défaut
     document.addEventListener('DOMContentLoaded', function() {
       var dateInput = document.getElementById('date');
@@ -341,6 +346,13 @@
           saveDraft();
         });
       });
+
+      // Ajuster la hauteur du champ résumé lors du chargement et à chaque saisie
+      var resumeField = document.getElementById('resume');
+      if (resumeField) {
+        autoGrow(resumeField);
+        resumeField.addEventListener('input', function() { autoGrow(this); });
+      }
     });
     // Fonction pour basculer l'état d'une ligne
     function toggleStatus(btn) {
