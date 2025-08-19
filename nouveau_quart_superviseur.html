@@ -1,132 +1,143 @@
-il<!DOCTYPE html>
-
+<!DOCTYPE html>
 <!--
-  Version finale du formulaire de changement de quart avec envoi automatique par courriel
-  et sauvegarde du rapport. Cette page regroupe les catégories dans un tableau
-  unique. Le bouton "Envoyer par courriel" a été supprimé : l'envoi se fait
-  maintenant automatiquement lors de la soumission du formulaire (bouton
-  "Envoyer"). Les adresses courriel des destinataires sont définies dans
-  admin_modified.html et sauvegardées via localStorage.
+  Formulaire de changement de quart pour le superviseur. Cette version
+  remplace l'envoi automatique par trois actions distinctes : enregistrer
+  dans la base de données, envoyer par courriel et imprimer. Les listes
+  déroulantes (superviseur, chef d'équipe et quart) sont renseignées à
+  partir de localStorage. Les catégories sont les mêmes que dans la
+  version originale du formulaire.
 -->
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<title>Changement de quart</title>
-<style>
-  :root {
-    --primary-color: #253746;
-    --secondary-color: #324e67;
-    --accent-color: #0078C8;
-    --text-light: #ffffff;
-    --field-bg: #f5f5f5;
-    --section-bg-blue: #1f3a5f;
-    --section-bg-orange: #a64d00;
-    --section-bg-red: #a00000;
-  }
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: var(--primary-color);
-    color: var(--text-light);
-  }
-  .form-wrapper {
-    max-width: 1000px;
-    margin: 2rem auto;
-    background: var(--secondary-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    overflow: hidden;
-  }
-  .form-header {
-    background: var(--primary-color);
-    padding: 1rem 2rem;
-    display: flex;
-    align-items: center;
-    border-bottom: 3px solid var(--accent-color);
-  }
-  .form-header img { height: 50px; margin-right: 1rem; }
-  .form-header h1 { font-size: 1.5rem; color: var(--text-light); margin: 0; }
-  .link-buttons { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
-  .link-button { display: inline-block; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border-radius: 4px; text-decoration: none; font-size: 1rem; }
-  .link-button:hover { background: #005fa0; }
-  .form-content { padding: 2rem; }
-  label { display: block; margin-top: 0.8rem; font-weight: bold; color: var(--text-light); }
-  input[type="text"], textarea, select { width: 100%; padding: 0.6rem; margin-top: 0.2rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; background: var(--field-bg); color: #333; }
-  textarea { resize: vertical; min-height: 60px; }
-  .team-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-  .team-table th, .team-table td { border: 1px solid #ddd; padding: 0.4rem; text-align: left; }
-  .team-table th { background: var(--section-bg-blue); color: var(--text-light); }
-  .category-section { margin-top: 1.5rem; padding: 1rem; background: var(--section-bg-blue); border-radius: 4px; }
-  .category-section h3 { margin-top: 0; margin-bottom: 0.5rem; color: var(--accent-color); }
-
-  @media print {
-    button { display: none; }
-    .link-buttons { display: none; }
-  }
-
-  .status-control { margin-top: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-
-  .status-btn { padding: 0.4rem 0.8rem; border: none; border-radius: 4px; color: #fff; margin-right: 0.3rem; cursor: pointer; }
-  .status-btn.arr { background-color: red; }
-  .status-btn.func { background-color: green; }
-  .status-btn.selected { box-shadow: 0 0 0 3px #fff inset; }
-  .status-btn.arr.selected { background-color: #ff6666; }
-  .status-btn.func.selected { background-color: #66cc66; }
-  .status-btn.selected { border: 2px solid #fff; }
-  /* Texte d'état affiché à l'impression */
-  .state-text { display: none; margin-left: 0.5rem; font-weight: bold; color: var(--text-light); }
-  @media print {
-    .state-text { display: inline; }
-    /* Masquer les boutons d'état à l'impression pour ne laisser que le texte */
-    button.status-btn { display: none; }
-  }
-</style>
+  <meta charset="utf-8" />
+  <title>Changement de quart – Superviseur</title>
+  <style>
+    :root {
+      --primary-color: #253746;
+      --secondary-color: #324e67;
+      --accent-color: #0078C8;
+      --text-light: #ffffff;
+      --field-bg: #f5f5f5;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--primary-color);
+      color: var(--text-light);
+    }
+    .form-wrapper {
+      max-width: 1000px;
+      margin: 2rem auto;
+      background: var(--secondary-color);
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .form-header {
+      background: var(--primary-color);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid var(--accent-color);
+    }
+    .form-header img { height: 50px; margin-right: 1rem; }
+    .form-header h1 { font-size: 1.5rem; color: var(--text-light); margin: 0; }
+    .link-buttons { display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem; }
+    .link-button {
+      display: inline-block;
+      padding: 0.7rem 1.4rem;
+      background: var(--accent-color);
+      color: var(--text-light);
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+    .link-button:hover { background: #005fa0; }
+    .form-content { padding: 2rem; }
+    label { display: block; margin-top: 0.8rem; font-weight: bold; color: var(--text-light); }
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.2rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      background: var(--field-bg);
+      color: #333;
+    }
+    textarea { resize: vertical; min-height: 60px; }
+    table.team-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    table.team-table th, table.team-table td {
+      border: 1px solid #ddd;
+      padding: 0.4rem;
+      text-align: left;
+    }
+    table.team-table th { background: var(--accent-color); color: var(--text-light); }
+    .status-btn {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+      margin-right: 0.3rem;
+      cursor: pointer;
+    }
+    .status-btn.arr { background-color: red; }
+    .status-btn.func { background-color: green; }
+    .status-btn.selected {
+      box-shadow: 0 0 0 3px #fff inset;
+      border: 2px solid #fff;
+    }
+    .state-text { display: none; margin-left: 0.5rem; font-weight: bold; color: var(--text-light); }
+    @media print {
+      .status-btn { display: none; }
+      .link-buttons { display: none; }
+      .state-text { display: inline; }
+    }
+  </style>
 </head>
 <body>
-<div class="form-wrapper">
-  <div class="form-header">
-    <img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&amp;height=64&amp;name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png"/>
-    <h1>Changement de quart</h1>
-  </div>
-<div class="link-buttons">
-  <a class="link-button" href="index.html">Retour vers Accueil</a>
-  <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
-</div>
-  <div class="form-content">
-    <h2>Superviseur</h2>
-    <label for="superviseur">Superviseur :</label>
-    <select id="superviseur" name="superviseur">
-      <option value="">--Sélectionnez--</option>
-      <option value="Vincent Lévesque">Vincent Lévesque</option>
-      <option value="Olivier Chrétien">Olivier Chrétien</option>
-    </select>
-
-    <label for="chef_equipe">Chef d'équipe :</label>
-    <select id="chef_equipe" name="chef_equipe">
-      <option value="">--Sélectionnez--</option>
-      <!-- Les options seront ajoutées dynamiquement depuis localStorage -->
-    </select>
-    <label for="quart">Quart :</label>
-    <select id="quart" name="quart">
-      <option value="">--Sélectionnez--</option>
-      <option value="Jour">Jour</option>
-      <option value="Nuit">Nuit</option>
-    </select>
-    <label for="date_du_jour">Date :</label>
-    <input id="date_du_jour" name="date_du_jour" type="date"/>
-    <form id="planForm">
-      <!-- Section synthèse général -->
-      <label for="evt_sst">Événement SST :</label>
+  <div class="form-wrapper">
+    <div class="form-header">
+      <img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" />
+      <h1>Changement de quart</h1>
+    </div>
+    <div class="link-buttons">
+      <a class="link-button" href="index.html">Accueil</a>
+      <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
+    </div>
+    <div class="form-content">
+      <h2>Superviseur</h2>
+      <label for="superviseur">Superviseur :</label>
+      <select id="superviseur" name="superviseur">
+        <option value="">--Sélectionnez--</option>
+        <!-- Les options seront ajoutées dynamiquement -->
+      </select>
+      <label for="chef_equipe">Chef d'équipe :</label>
+      <select id="chef_equipe" name="chef_equipe">
+        <option value="">--Sélectionnez--</option>
+        <!-- Options ajoutées dynamiquement -->
+      </select>
+      <label for="quart">Quart :</label>
+      <select id="quart" name="quart">
+        <option value="">--Sélectionnez--</option>
+        <!-- Options ajoutées dynamiquement -->
+      </select>
+      <label for="date">Date :</label>
+      <input id="date" name="date" type="date" />
+      <label for="evt_sst">Événement SST :</label>
       <textarea id="evt_sst" name="evt_sst"></textarea>
-      <label for="evt_env">Événement environnement et MDR :</label>
+      <label for="evt_env">Événement environnement et MDR :</label>
       <textarea id="evt_env" name="evt_env"></textarea>
-      <label for="travaux_mec">Travaux mécanique en cours :</label>
+      <label for="travaux_mec">Travaux mécanique en cours :</label>
       <textarea id="travaux_mec" name="travaux_mec"></textarea>
-      <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
+      <label for="resume_jour">Superviseur/Opérateur (résumé de la journée/nuit) :</label>
       <textarea id="resume_jour" name="resume_jour"></textarea>
-
-      <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
         <thead>
           <tr>
@@ -139,242 +150,261 @@ il<!DOCTYPE html>
         <tbody>
           <tr data-category="Digestion">
             <td>Digestion</td>
-            <td><textarea id="digestion_consigne" name="digestion_consigne"></textarea></td>
-            <td><textarea id="digestion_commentaire" name="digestion_commentaire"></textarea></td>
-<td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td><textarea name="digestion_consigne"></textarea></td>
+            <td><textarea name="digestion_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Cristalisation">
             <td>Cristalisation</td>
-            <td><textarea id="cristalisation_consigne" name="cristalisation_consigne"></textarea></td>
-            <td><textarea id="cristalisation_commentaire" name="cristalisation_commentaire"></textarea></td>
-<td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td><textarea name="cristalisation_consigne"></textarea></td>
+            <td><textarea name="cristalisation_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Centrifuge">
             <td>Centrifuge</td>
-            <td><textarea id="centrifuge_consigne" name="centrifuge_consigne"></textarea></td>
-            <td><textarea id="centrifuge_commentaire" name="centrifuge_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td><textarea name="centrifuge_consigne"></textarea></td>
+            <td><textarea name="centrifuge_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Décomposition (Harpers)">
-            <td>Décomposition (Harpers)</td>
-            <td><textarea id="decomposition_harpers_consigne" name="decomposition_harpers_consigne"></textarea></td>
-            <td><textarea id="decomposition_harpers_commentaire" name="decomposition_harpers_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td>Décomposition (Harpers)</td>
+            <td><textarea name="decomposition_consigne"></textarea></td>
+            <td><textarea name="decomposition_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Calcination (F04)">
-            <td>Calcination (F04)</td>
-            <td><textarea id="calcination_f04_consigne" name="calcination_f04_consigne"></textarea></td>
-            <td><textarea id="calcination_f04_commentaire" name="calcination_f04_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td>Calcination (F04)</td>
+            <td><textarea name="calcination_f04_consigne"></textarea></td>
+            <td><textarea name="calcination_f04_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Lavage S02">
-            <td>Lavage S02</td>
-            <td><textarea id="lavage_s02_consigne" name="lavage_s02_consigne"></textarea></td>
-            <td><textarea id="lavage_s02_commentaire" name="lavage_s02_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td>Lavage S02</td>
+            <td><textarea name="lavage_s02_consigne"></textarea></td>
+            <td><textarea name="lavage_s02_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Buhler">
             <td>Buhler</td>
-            <td><textarea id="buhler_consigne" name="buhler_consigne"></textarea></td>
-            <td><textarea id="buhler_commentaire" name="buhler_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td><textarea name="buhler_consigne"></textarea></td>
+            <td><textarea name="buhler_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
-          <tr data-category="HP60 (Mega Pulse)">
-            <td>HP60 (Mega Pulse)</td>
-            <td><textarea id="hp60_mega_pulse_consigne" name="hp60_mega_pulse_consigne"></textarea></td>
-            <td><textarea id="hp60_mega_pulse_commentaire" name="hp60_mega_pulse_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+          <tr data-category="HP60 (Mega Pulse)">
+            <td>HP60 (Mega Pulse)</td>
+            <td><textarea name="hp60_consigne"></textarea></td>
+            <td><textarea name="hp60_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Mini-Pulse">
             <td>Mini-Pulse</td>
-            <td><textarea id="mini_pulse_consigne" name="mini_pulse_consigne"></textarea></td>
-            <td><textarea id="mini_pulse_commentaire" name="mini_pulse_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td><textarea name="mini_pulse_consigne"></textarea></td>
+            <td><textarea name="mini_pulse_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Fabrication de Puck">
-            <td>Fabrication de Puck</td>
-            <td><textarea id="fabrication_de_puck_consigne" name="fabrication_de_puck_consigne"></textarea></td>
-            <td><textarea id="fabrication_de_puck_commentaire" name="fabrication_de_puck_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td>Fabrication de Puck</td>
+            <td><textarea name="fabrication_puck_consigne"></textarea></td>
+            <td><textarea name="fabrication_puck_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
           <tr data-category="Traitement des eaux">
-            <td>Traitement des eaux</td>
-            <td><textarea id="traitement_des_eaux_consigne" name="traitement_des_eaux_consigne"></textarea></td>
-            <td><textarea id="traitement_des_eaux_commentaire" name="traitement_des_eaux_commentaire"></textarea></td>
-            <td><button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button><button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button><span class="state-text"></span></td>
+            <td>Traitement des eaux</td>
+            <td><textarea name="traitement_eaux_consigne"></textarea></td>
+            <td><textarea name="traitement_eaux_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
           </tr>
         </tbody>
       </table>
-      <button type="submit">Envoyer</button>
-      <button type="button" onclick="window.print()">Imprimer</button>
-    </form>
+      <div class="action-buttons" style="margin-top:1rem; display:flex; gap:1rem;">
+        <button type="button" id="saveBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Enregistrer</button>
+        <button type="button" id="emailBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Envoyer par courriel</button>
+        <button type="button" id="printBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Imprimer</button>
+      </div>
+    </div>
   </div>
-</div>
-<script>
-// Définir la date par défaut au chargement
-document.addEventListener('DOMContentLoaded', function() {
-  var dateInput = document.getElementById('date_du_jour');
-  if (dateInput) {
-    var today = new Date().toISOString().substr(0, 10);
-    dateInput.value = today;
-  }
-
-  // Charger la liste des chefs d'équipe depuis localStorage et remplir le sélecteur
-  var teamLeadSelect = document.getElementById('chef_equipe');
-  if (teamLeadSelect) {
-    var storedLeads = localStorage.getItem('teamLeadList') || '';
-    // Si aucune liste enregistrée, utiliser les valeurs par défaut
-    var defaultLeads = ['Jean Dupont','Marie Tremblay','Alain Gagnon','Sophie Lemaire'];
-    var leadsArray = [];
-    if (storedLeads.trim() !== '') {
-      leadsArray = storedLeads.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
-    } else {
-      leadsArray = defaultLeads;
-    }
-    leadsArray.forEach(function(name) {
-      var opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      teamLeadSelect.appendChild(opt);
-    });
-  }
-
-  // Charger la liste des superviseurs depuis localStorage et remplir le sélecteur
-  var supervisorSelect = document.getElementById('superviseur');
-  if (supervisorSelect) {
-    var storedSup = localStorage.getItem('supervisorList') || '';
-    var defaultSup = ['Vincent Lévesque','Olivier Chrétien'];
-    var supArray = [];
-    if (storedSup.trim() !== '') {
-      supArray = storedSup.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
-    } else {
-      supArray = defaultSup;
-    }
-    // Retirer toutes les options existantes sauf la première (placeholder)
-    while (supervisorSelect.options.length > 1) {
-      supervisorSelect.remove(1);
-    }
-    supArray.forEach(function(name) {
-      var opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      supervisorSelect.appendChild(opt);
-    });
-  }
-
-  // Charger la liste des quarts depuis localStorage et remplir le sélecteur
-  var shiftSelect = document.getElementById('quart');
-  if (shiftSelect) {
-    var storedShift = localStorage.getItem('shiftList') || '';
-    var defaultShift = ['Jour','Nuit'];
-    var shiftArray = [];
-    if (storedShift.trim() !== '') {
-      shiftArray = storedShift.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
-    } else {
-      shiftArray = defaultShift;
-    }
-    while (shiftSelect.options.length > 1) {
-      shiftSelect.remove(1);
-    }
-    shiftArray.forEach(function(name) {
-      var opt = document.createElement('option');
-      opt.value = name;
-      opt.textContent = name;
-      shiftSelect.appendChild(opt);
-    });
-  }
-});
-
-// Fonction pour basculer l'état d'une ligne (boutons Arrêt/Fonction)
-function toggleStatus(btn) {
-  var row = btn.closest('tr');
-  var buttons = row.querySelectorAll('.status-btn');
-  buttons.forEach(function(b) { b.classList.remove('selected'); });
-  btn.classList.add('selected');
-  // Mettre à jour l'affichage texte de l'état
-  var stateEl = row.querySelector('.state-text');
-  if (stateEl) {
-    stateEl.textContent = btn.textContent;
-  }
-}
-
-// Gestion de la soumission du formulaire
-document.addEventListener('DOMContentLoaded', function() {
-  var form = document.getElementById('planForm');
-  if (form) {
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      // Récupérer les informations générales
-      var date = document.getElementById('date_du_jour') ? document.getElementById('date_du_jour').value : '';
-      var superviseur = document.getElementById('superviseur') ? document.getElementById('superviseur').value : '';
-      // Chef d'équipe sélectionné
-      var chefEquipe = document.getElementById('chef_equipe') ? document.getElementById('chef_equipe').value : '';
-      var quart = document.getElementById('quart') ? document.getElementById('quart').value : '';
-      var evt_sst = document.getElementById('evt_sst').value;
-      var evt_env = document.getElementById('evt_env').value;
-      var travaux_mec = document.getElementById('travaux_mec').value;
-      var resume_jour = document.getElementById('resume_jour').value;
-
-      // Composer un objet rapport
-      var report = {
-        date: date,
-        superviseur: superviseur,
-        chef_equipe: chefEquipe,
-        quart: quart,
-        evt_sst: evt_sst,
-        evt_env: evt_env,
-        travaux_mec: travaux_mec,
-        resume_jour: resume_jour,
-        categories: []
-      };
-      var body = 'Superviseur: ' + superviseur + '\nQuart: ' + quart + '\nDate: ' + date + '\n\n';
-      if (chefEquipe) {
-        body = 'Chef d\'équipe: ' + chefEquipe + '\n' + body;
+  <script>
+    // Définir la date par défaut
+    document.addEventListener('DOMContentLoaded', function() {
+      var dateInput = document.getElementById('date');
+      if (dateInput) {
+        var today = new Date().toISOString().substr(0, 10);
+        dateInput.value = today;
       }
-      body += 'Événement SST: ' + evt_sst + '\n';
-      body += 'Événement environnement et MDR: ' + evt_env + '\n';
-      body += 'Travaux mécanique en cours: ' + travaux_mec + '\n';
-      body += 'Résumé journée/nuit: ' + resume_jour + '\n\n';
-
+      // Charger les listes de choix depuis localStorage
+      var supervisorSelect = document.getElementById('superviseur');
+      if (supervisorSelect) {
+        var storedSup = localStorage.getItem('supervisorList') || '';
+        var defaultSup = ['Vincent Lévesque','Olivier Chrétien'];
+        var supArray = [];
+        if (storedSup.trim() !== '') {
+          supArray = storedSup.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+        } else {
+          supArray = defaultSup;
+        }
+        supArray.forEach(function(name) {
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          supervisorSelect.appendChild(opt);
+        });
+      }
+      var teamLeadSelect = document.getElementById('chef_equipe');
+      if (teamLeadSelect) {
+        var storedLeads = localStorage.getItem('teamLeadList') || '';
+        var defaultLeads = ['Jean Dupont','Marie Tremblay','Alain Gagnon','Sophie Lemaire'];
+        var leadsArray = [];
+        if (storedLeads.trim() !== '') {
+          leadsArray = storedLeads.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+        } else {
+          leadsArray = defaultLeads;
+        }
+        leadsArray.forEach(function(name) {
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          teamLeadSelect.appendChild(opt);
+        });
+      }
+      var shiftSelect = document.getElementById('quart');
+      if (shiftSelect) {
+        var storedShift = localStorage.getItem('shiftList') || '';
+        var defaultShift = ['Jour','Nuit'];
+        var shiftArray = [];
+        if (storedShift.trim() !== '') {
+          shiftArray = storedShift.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+        } else {
+          shiftArray = defaultShift;
+        }
+        shiftArray.forEach(function(name) {
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          shiftSelect.appendChild(opt);
+        });
+      }
+    });
+    // Fonction pour basculer l'état d'une ligne
+    function toggleStatus(btn) {
+      var container = btn.parentElement;
+      var buttons = container.querySelectorAll('.status-btn');
+      buttons.forEach(function(b) { b.classList.remove('selected'); });
+      btn.classList.add('selected');
+      var span = container.querySelector('.state-text');
+      span.textContent = btn.textContent;
+    }
+    // Collecte des données du formulaire
+    function collectReportData() {
+      var superviseur = document.getElementById('superviseur').value;
+      var chef = document.getElementById('chef_equipe').value;
+      var quart = document.getElementById('quart').value;
+      var dateVal = document.getElementById('date').value;
+      var evtSst = document.getElementById('evt_sst').value;
+      var evtEnv = document.getElementById('evt_env').value;
+      var travaux = document.getElementById('travaux_mec').value;
+      var resume = document.getElementById('resume_jour').value;
+      var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
-        var category = row.getAttribute('data-category');
+        var catName = row.getAttribute('data-category');
         var consigne = row.querySelector('textarea[name$="_consigne"]').value;
         var commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
-        var stateBtn = row.querySelector('.status-btn.selected');
-        var etat = stateBtn ? stateBtn.textContent : '';
-        report.categories.push({ categorie: category, consigne: consigne, commentaire: commentaire, etat: etat });
-        body += category + '\nConsigne: ' + consigne + '\nCommentaires: ' + commentaire + '\nÉtat: ' + etat + '\n\n';
+        var selectedBtn = row.querySelector('.status-btn.selected');
+        var etat = selectedBtn ? selectedBtn.textContent : '';
+        cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-
-      // Enregistrer le rapport dans localStorage
+      return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, travaux_mec: travaux, resume_jour: resume, categories: cats };
+    }
+    // Enregistrer dans localStorage
+    function saveReport() {
+      var report = collectReportData();
       try {
         var existing = localStorage.getItem('rapports');
         var arr = existing ? JSON.parse(existing) : [];
         arr.push(report);
         localStorage.setItem('rapports', JSON.stringify(arr));
+        alert('Rapport enregistré dans la base de données.');
       } catch (e) {
-        console.error('Impossible de sauvegarder le rapport : ', e);
+        console.error('Erreur lors de l\'enregistrement : ', e);
+        alert('Une erreur est survenue lors de l\'enregistrement.');
       }
-
-      // Préparer l'envoi par courriel
+    }
+    // Envoyer par courriel
+    function sendEmail() {
+      var report = collectReportData();
+      // Sauvegarder avant d'envoyer
+      saveReport();
+      var body = '';
+      body += 'Superviseur: ' + report.superviseur + '\n';
+      if (report.chef_equipe) { body += "Chef d'équipe: " + report.chef_equipe + '\n'; }
+      body += 'Quart: ' + report.quart + '\n';
+      body += 'Date: ' + report.date + '\n\n';
+      body += 'Événement SST: ' + report.evt_sst + '\n';
+      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
+      body += 'Travaux mécanique en cours: ' + report.travaux_mec + '\n';
+      body += 'Résumé journée/nuit: ' + report.resume_jour + '\n\n';
+      body += 'Catégories:\n';
+      report.categories.forEach(function(cat) {
+        body += cat.categorie + '\n';
+        body += 'Consigne: ' + cat.consigne + '\n';
+        body += 'Commentaires: ' + cat.commentaire + '\n';
+        body += 'État: ' + cat.etat + '\n\n';
+      });
       var emailListRaw = localStorage.getItem('emailList') || '';
-      // Séparer par point-virgule ou retour à la ligne et nettoyer les espaces
       var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
       var toField = emailArray.join(',');
-      var subject = 'Plan de match - ' + date;
-      // Construire le lien mailto
+      var subject = 'Plan de match - ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-      // Ouvrir l'application courriel
       window.location.href = mailtoLink;
-
-      // Optionnel : notification
-      alert('Rapport envoyé et enregistré.');
-      // Réinitialiser le formulaire si nécessaire
-      // form.reset();
-    });
-  }
-});
-</script>
+    }
+    // Écouteurs de boutons
+    document.getElementById('saveBtn').addEventListener('click', function() { saveReport(); });
+    document.getElementById('emailBtn').addEventListener('click', function() { sendEmail(); });
+    document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
+  </script>
 </body>
 </html>
