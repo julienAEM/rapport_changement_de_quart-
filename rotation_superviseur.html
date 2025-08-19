@@ -113,7 +113,7 @@
       <textarea id="evt" name="evt"></textarea>
       <!-- Champ de résumé pour la rotation entière -->
       <label for="resume">Résumé de la rotation :</label>
-      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
+      <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
         <thead>
@@ -257,6 +257,11 @@
     </div>
   </div>
   <script>
+    // Fonction pour faire grandir automatiquement la zone de résumé
+    function autoGrow(textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
     function toggleStatus(btn) {
       var container = btn.parentElement;
       var buttons = container.querySelectorAll('.status-btn');
@@ -282,6 +287,13 @@
         el.addEventListener('input', function() { saveDraft(); });
         el.addEventListener('change', function() { saveDraft(); });
       });
+
+      // Ajuster la hauteur du résumé au chargement et à la saisie
+      var resumeField = document.getElementById('resume');
+      if (resumeField) {
+        autoGrow(resumeField);
+        resumeField.addEventListener('input', function() { autoGrow(this); });
+      }
     });
     // Fonction pour collecter les données du formulaire
     function collectReportData() {
