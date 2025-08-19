@@ -86,9 +86,9 @@
       <h1>Changement de quart – Salle de contrôle</h1>
     </div>
     <div class="link-buttons">
-  <a class="link-button" href="index.html">Retour vers Accueil</a>
-  <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
-</div>
+      <a class="link-button" href="index.html">Accueil</a>
+      <a class="link-button" href="rapport_multi_search.html">Consulter les rapports</a>
+    </div>
     <div class="form-content">
       <label for="operateur">Opérateur :</label>
       <input id="operateur" name="operateur" type="text" />
@@ -230,7 +230,11 @@
           </tr>
         </tbody>
       </table>
-      <button type="button" id="envoyer" style="margin-top:1rem; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Envoyer</button>
+      <div class="action-buttons" style="margin-top:1rem; display:flex; gap:1rem;">
+        <button type="button" id="saveBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Enregistrer</button>
+        <button type="button" id="emailBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Envoyer par courriel</button>
+        <button type="button" id="printBtn" style="flex:1; padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Imprimer</button>
+      </div>
     </div>
   </div>
   <script>
@@ -256,8 +260,8 @@
       }
     });
     // Enregistrer et envoyer (prototype)
-    document.getElementById('envoyer').addEventListener('click', function() {
-      // Construire l'objet de rapport pour la salle de contrôle
+    // Fonction pour collecter les données du formulaire
+    function collectReportData() {
       var operateur = document.getElementById('operateur').value;
       var quartVal = document.getElementById('quart').value;
       var dateVal = document.getElementById('date').value;
@@ -274,19 +278,57 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      var report = { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+      return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+    }
+    // Enregistrer dans localStorage uniquement
+    function saveReport() {
+      var report = collectReportData();
       try {
         var existing = localStorage.getItem('rapportsControl');
         var arr = existing ? JSON.parse(existing) : [];
         arr.push(report);
         localStorage.setItem('rapportsControl', JSON.stringify(arr));
-        alert('Rapport enregistré.');
+        alert('Rapport enregistré dans la base de données.');
       } catch (e) {
         console.error('Erreur lors de l\'enregistrement : ', e);
         alert('Une erreur est survenue lors de l\'enregistrement.');
       }
-      // Réinitialiser le formulaire si nécessaire
-      // document.querySelector('form').reset();
+    }
+    // Préparer et ouvrir l'email avec les données du rapport
+    function sendEmail() {
+      var report = collectReportData();
+      // Enregistrer d'abord pour conserver le rapport
+      saveReport();
+      // Construire le corps du courriel
+      var body = 'Date: ' + report.date + '\n';
+      body += 'Opérateur: ' + report.operateur + '\n';
+      body += 'Quart: ' + report.quart + '\n\n';
+      body += 'Événement SST: ' + report.evt_sst + '\n';
+      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
+      body += 'Travaux mécanique en cours: ' + report.travaux + '\n\n';
+      body += 'Catégories:\n';
+      report.categories.forEach(function(cat) {
+        body += cat.categorie + '\n';
+        body += 'Consigne: ' + cat.consigne + '\n';
+        body += 'Commentaires: ' + cat.commentaire + '\n';
+        body += 'État: ' + cat.etat + '\n\n';
+      });
+      // Destinataires à partir de la liste enregistrée
+      var emailListRaw = localStorage.getItem('emailList') || '';
+      var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
+      var toField = emailArray.join(',');
+      var subject = 'Plan de match - ' + report.date;
+      var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      window.location.href = mailtoLink;
+    }
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      saveReport();
+    });
+    document.getElementById('emailBtn').addEventListener('click', function() {
+      sendEmail();
+    });
+    document.getElementById('printBtn').addEventListener('click', function() {
+      window.print();
     });
   </script>
 </body>
