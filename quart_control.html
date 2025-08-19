@@ -114,6 +114,10 @@
            accomplies pendant le quart et de fournir un résumé clair. -->
       <label for="resume">Résumé de la journée :</label>
       <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
+
+      <!-- Champ complémentaire pour des observations supplémentaires, avec la même présentation que le résumé principal -->
+      <label for="resume_supp">Observations supplémentaires :</label>
+      <textarea id="resume_supp" name="resume_supp" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
         <thead>
@@ -316,6 +320,12 @@
         autoGrow(resumeField);
         resumeField.addEventListener('input', function() { autoGrow(this); });
       }
+      // Ajuster la hauteur du champ d'observations supplémentaires
+      var resumeSuppField = document.getElementById('resume_supp');
+      if (resumeSuppField) {
+        autoGrow(resumeSuppField);
+        resumeSuppField.addEventListener('input', function() { autoGrow(this); });
+      }
       // Sauvegarder le brouillon à chaque modification de champ
       var inputs = document.querySelectorAll('input, textarea, select');
       inputs.forEach(function(el) {
@@ -332,6 +342,7 @@
       var evtSst = document.getElementById('evt_sst').value;
       var evtEnv = document.getElementById('evt_env').value;
       var resume = document.getElementById('resume').value;
+      var resume_supp = document.getElementById('resume_supp').value;
       var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
@@ -342,7 +353,7 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, resume: resume, categories: cats };
+      return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, resume: resume, resume_supp: resume_supp, categories: cats };
     }
     // Enregistrer le brouillon du quart salle de contrôle
     function saveDraft() {
@@ -365,6 +376,7 @@
           if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
           if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
           if (document.getElementById('resume')) document.getElementById('resume').value = draft.resume || '';
+          if (document.getElementById('resume_supp')) document.getElementById('resume_supp').value = draft.resume_supp || '';
           // Catégories
           (draft.categories || []).forEach(function(cat) {
             var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
@@ -419,7 +431,11 @@
       body += 'Événement SST: ' + report.evt_sst + '\n';
       body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
       // Ajouter le résumé de la journée à la place du champ travaux
-      body += 'Résumé de la journée: ' + report.resume + '\n\n';
+      body += 'Résumé de la journée: ' + report.resume + '\n';
+      if (report.resume_supp) {
+        body += 'Observations supplémentaires: ' + report.resume_supp + '\n';
+      }
+      body += '\n';
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
         body += cat.categorie + '\n';
