@@ -91,7 +91,12 @@
     </div>
     <div class="form-content">
       <label for="operateur">Opérateur :</label>
-      <input id="operateur" name="operateur" type="text" />
+      <!-- Utilisation d'un menu déroulant pour sélectionner l'opérateur. La liste est
+           alimentée depuis localStorage (clé operatorList) afin de pouvoir
+           être ajustée via la page d'administration. -->
+      <select id="operateur" name="operateur">
+        <option value="">--Sélectionnez--</option>
+      </select>
       <label for="quart">Quart :</label>
       <select id="quart" name="quart">
         <option value="">--Sélectionnez--</option>
@@ -104,8 +109,11 @@
       <textarea id="evt_sst" name="evt_sst"></textarea>
       <label for="evt_env">Événement environnement et MDR :</label>
       <textarea id="evt_env" name="evt_env"></textarea>
-      <label for="travaux">Travaux mécanique en cours :</label>
-      <textarea id="travaux" name="travaux"></textarea>
+      <!-- Remplacement du champ "Travaux mécanique en cours" par une rubrique de résumé
+           de la journée. Cette zone élargie permet de consigner les tâches
+           accomplies pendant le quart et de fournir un résumé clair. -->
+      <label for="resume">Résumé de la journée :</label>
+      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
       <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
         <thead>
@@ -228,6 +236,19 @@
               <span class="state-text"></span>
             </td>
           </tr>
+          <!-- Nouvelle catégorie pour documenter les modifications système.
+               Permet de consigner toutes les interventions sur le DCS,
+               procédures ou by-pass réalisés pendant le quart. -->
+          <tr data-category="Modifications DCS/Procédure/By-pass">
+            <td>Modifications DCS / Procédure / By‑pass</td>
+            <td><textarea name="modifications_consigne"></textarea></td>
+            <td><textarea name="modifications_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
+          </tr>
         </tbody>
       </table>
       <div class="action-buttons" style="margin-top:1rem; display:flex; gap:1rem;">
@@ -261,6 +282,25 @@
         var today = new Date().toISOString().substr(0, 10);
         dateInput.value = today;
       }
+      // Remplir la liste des opérateurs depuis localStorage
+      var opSelect = document.getElementById('operateur');
+      if (opSelect) {
+        var storedOps = localStorage.getItem('operatorList') || '';
+        var defaultOps = ['Opérateur 1', 'Opérateur 2'];
+        var opArray = [];
+        if (storedOps.trim() !== '') {
+          opArray = storedOps.split(/[\n;]/).map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+        } else {
+          opArray = defaultOps;
+        }
+        // Ajouter les options dans la liste déroulante
+        opArray.forEach(function(name) {
+          var opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          opSelect.appendChild(opt);
+        });
+      }
       // Charger un brouillon existant après initialisation de la date
       loadDraft();
       // Sauvegarder le brouillon à chaque modification de champ
@@ -278,7 +318,7 @@
       var dateVal = document.getElementById('date').value;
       var evtSst = document.getElementById('evt_sst').value;
       var evtEnv = document.getElementById('evt_env').value;
-      var travaux = document.getElementById('travaux').value;
+      var resume = document.getElementById('resume').value;
       var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
@@ -289,7 +329,7 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+      return { operateur: operateur, quart: quartVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, resume: resume, categories: cats };
     }
     // Enregistrer le brouillon du quart salle de contrôle
     function saveDraft() {
@@ -311,7 +351,7 @@
           if (document.getElementById('date')) document.getElementById('date').value = draft.date || '';
           if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
           if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
-          if (document.getElementById('travaux')) document.getElementById('travaux').value = draft.travaux || '';
+          if (document.getElementById('resume')) document.getElementById('resume').value = draft.resume || '';
           // Catégories
           (draft.categories || []).forEach(function(cat) {
             var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
@@ -365,7 +405,8 @@
       body += 'Quart: ' + report.quart + '\n\n';
       body += 'Événement SST: ' + report.evt_sst + '\n';
       body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
-      body += 'Travaux mécanique en cours: ' + report.travaux + '\n\n';
+      // Ajouter le résumé de la journée à la place du champ travaux
+      body += 'Résumé de la journée: ' + report.resume + '\n\n';
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
         body += cat.categorie + '\n';
