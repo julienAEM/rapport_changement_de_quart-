@@ -50,6 +50,11 @@ Olivier Chrétien</textarea>
     <textarea id="shiftList">Jour
 Nuit</textarea>
     <button type="button" onclick="saveShiftList()">Enregistrer la liste des quarts</button>
+
+    <!-- Liste des opérateurs pour la salle de contrôle -->
+    <label for="operatorList">Liste des opérateurs :</label>
+    <textarea id="operatorList"></textarea>
+    <button type="button" onclick="saveOperatorList()">Enregistrer la liste des opérateurs</button>
     <h2>Liste des destinataires pour l'envoi des rapports</h2>
     <p>Entrez les adresses courriel auxquelles les rapports doivent être envoyés automatiquement, séparées par des points-virgules ou des retours à la ligne.</p>
     <label for="emailList">Adresses courriel :</label>
@@ -89,6 +94,12 @@ Nuit</textarea>
         if (storedTeamLeads !== null) {
           document.getElementById('teamLeadList').value = storedTeamLeads;
         }
+
+        // Charger la liste des opérateurs si elle existe
+        var storedOperators = localStorage.getItem('operatorList');
+        if (storedOperators !== null) {
+          document.getElementById('operatorList').value = storedOperators;
+        }
       } else {
         document.getElementById('accessDenied').style.display = 'block';
       }
@@ -126,6 +137,13 @@ Nuit</textarea>
       var leads = document.getElementById('teamLeadList').value.trim();
       localStorage.setItem('teamLeadList', leads);
       alert("Liste des chefs d'équipe enregistrée.");
+    }
+
+    // Sauvegarder la liste des opérateurs dans localStorage
+    function saveOperatorList() {
+      var ops = document.getElementById('operatorList').value.trim();
+      localStorage.setItem('operatorList', ops);
+      alert('Liste des opérateurs enregistrée.');
     }
     // Réinitialiser toutes les listes de rapports (ne supprime pas les listes de noms ou le mot de passe)
     function resetReports() {
