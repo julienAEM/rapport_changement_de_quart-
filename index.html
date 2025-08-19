@@ -1,8 +1,14 @@
 <!DOCTYPE html>
+<!--
+  Page d'accueil pour les formulaires de changement de quart et de rotation.
+  Cette version met à jour les étiquettes des boutons pour plus de clarté,
+  ajoute "Résumé" devant les formulaires de rotation et propose un menu
+  déroulant stylisé pour accéder rapidement à un rapport en cours d'écriture.
+-->
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Accueil</title>
+  <meta charset="utf-8">
+  <title>Changement de quart – Accueil</title>
   <style>
     :root {
       --primary-color: #253746;
@@ -36,8 +42,9 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      align-items: stretch;
     }
-    .nav-buttons a {
+    .nav-buttons a, .nav-buttons select {
       display: inline-block;
       padding: 0.8rem 1.6rem;
       background: var(--accent-color);
@@ -45,9 +52,24 @@
       border-radius: 4px;
       text-decoration: none;
       font-size: 1rem;
+      border: none;
+      cursor: pointer;
     }
-    .nav-buttons a:hover {
+    .nav-buttons a:hover, .nav-buttons select:hover {
       background: #005fa0;
+    }
+    /* Amélioration visuelle du menu déroulant pour qu'il ressemble aux autres boutons */
+    .nav-buttons select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+    }
+    .nav-buttons select option {
+      color: #333;
     }
   </style>
 </head>
@@ -55,20 +77,21 @@
   <div class="container">
     <h1>Changement de quart – Accueil</h1>
     <div class="nav-buttons">
-      <!-- Boutons de navigation principaux -->
-  <a href="nouveau_quart_superviseur.html" class="nav-button">Nouveau rapport – Changement de quart (superviseur)</a>
-  <a href="quart_control.html" class="nav-button">Salle de contrôle (Changement de quart)</a>
-  <a href="rotation_superviseur.html" class="nav-button">Rotation (superviseur)</a>
-  <a href="rotation_control.html" class="nav-button">Rotation (salle de contrôle)</a>
-  <a href="rapport_multi_search.html" class="nav-button">Consulter les rapports (base de données)</a>
-<select id="resumeLinks" onchange="if(this.value) location.href=this.value;" style="margin-top:1rem; padding:0.7rem; border-radius:4px;">
-  <option value="">— Consulter un rapport en cours —</option>
-  <option value="nouveau_quart_superviseur.html">Changement de quart (superviseur)</option>
-  <option value="quart_control.html">Changement de quart (salle de contrôle)</option>
-  <option value="rotation_superviseur.html">Changement de rotation (superviseur)</option>
-  <option value="rotation_control.html">Changement de rotation (salle de contrôle)</option>
-</select>
-      <a href="admin.html" class="nav-button">Admin</a>
+      <!-- Boutons vers les différents formulaires -->
+      <a href="nouveau_quart_superviseur.html">Changement de quart (superviseur)</a>
+      <a href="quart_control.html">Changement de quart (salle de contrôle)</a>
+      <a href="rotation_superviseur.html">Résumé rotation (superviseur)</a>
+      <a href="rotation_control.html">Résumé rotation (salle de contrôle)</a>
+      <a href="rapport_multi_search.html">Consulter les rapports (base de données)</a>
+      <!-- Menu déroulant stylisé pour accéder à un rapport en cours d'écriture -->
+      <select id="resumeLinks" onchange="if(this.value) location.href=this.value;">
+        <option value="">— Consulter un rapport en cours —</option>
+        <option value="nouveau_quart_superviseur.html">Changement de quart (superviseur)</option>
+        <option value="quart_control.html">Changement de quart (salle de contrôle)</option>
+        <option value="rotation_superviseur.html">Résumé rotation (superviseur)</option>
+        <option value="rotation_control.html">Résumé rotation (salle de contrôle)</option>
+      </select>
+      <a href="admin.html">Admin</a>
     </div>
   </div>
 </body>
