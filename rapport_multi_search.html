@@ -40,6 +40,11 @@
     th, td { border: 1px solid #ddd; padding: 0.6rem; text-align: left; }
     th { background: var(--accent-color); color: var(--text-light); }
     .no-results { text-align: center; padding: 1rem; }
+
+    /* Masquer la barre de navigation et le formulaire lors de l'impression pour ne conserver que les résultats */
+    @media print {
+      .nav-buttons, form { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -50,6 +55,8 @@
     </div>
     <div class="nav-buttons">
       <a href="index.html" class="nav-button">Retour à l'accueil</a>
+      <!-- Bouton pour imprimer les résultats de la recherche -->
+      <button id="printResults" type="button" class="nav-button" style="border:none; cursor:pointer;">Imprimer les résultats</button>
     </div>
     <div class="content">
       <form id="searchForm">
@@ -245,6 +252,15 @@
 
       // Changer de type déclenche le rechargement des données
       typeSelect.addEventListener('change', loadAndDisplay);
+
+      // Attacher l'action d'impression des résultats
+      var printBtn = document.getElementById('printResults');
+      if (printBtn) {
+        printBtn.addEventListener('click', function() {
+          // Imprimer uniquement la table des résultats et masquer le formulaire et les boutons.
+          window.print();
+        });
+      }
 
       // Chargement initial
       loadAndDisplay();
