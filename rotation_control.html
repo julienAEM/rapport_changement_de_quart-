@@ -100,12 +100,12 @@
       </select>
       <label for="date">Date :</label>
       <input id="date" name="date" type="date" />
-      <label for="evt_sst">Événement SST :</label>
-      <textarea id="evt_sst" name="evt_sst"></textarea>
-      <label for="evt_env">Événement environnement et MDR :</label>
-      <textarea id="evt_env" name="evt_env"></textarea>
-      <label for="travaux">Travaux mécanique en cours :</label>
-      <textarea id="travaux" name="travaux"></textarea>
+      <!-- Unification des champs d'événements en un seul champ -->
+      <label for="evt">Événements SST / Environnement :</label>
+      <textarea id="evt" name="evt"></textarea>
+      <!-- Ajout d'un résumé de la rotation, pour consigner le déroulement complet -->
+      <label for="resume">Résumé de la rotation :</label>
+      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
       <table class="team-table" id="categoryTable">
         <thead>
           <tr>
@@ -226,6 +226,17 @@
               <span class="state-text"></span>
             </td>
           </tr>
+          <!-- Ajout d'une catégorie spécifique pour les modifications du système, procédures et by-pass -->
+          <tr data-category="Modifications DCS/Procédure/By-pass">
+            <td>Modifications DCS / Procédure / By‑pass</td>
+            <td><textarea name="modifications_consigne"></textarea></td>
+            <td><textarea name="modifications_commentaire"></textarea></td>
+            <td>
+              <button class="status-btn arr" type="button" onclick="toggleStatus(this)">Arrêt</button>
+              <button class="status-btn func" type="button" onclick="toggleStatus(this)">Fonction</button>
+              <span class="state-text"></span>
+            </td>
+          </tr>
         </tbody>
       </table>
       <div class="action-buttons" style="margin-top:1rem; display:flex; gap:1rem;">
@@ -273,9 +284,8 @@
       var operateur = document.getElementById('operateur').value;
       var rotationVal = document.getElementById('rotation').value;
       var dateVal = document.getElementById('date').value;
-      var evtSst = document.getElementById('evt_sst').value;
-      var evtEnv = document.getElementById('evt_env').value;
-      var travaux = document.getElementById('travaux').value;
+      var evt = document.getElementById('evt').value;
+      var resume = document.getElementById('resume').value;
       var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
@@ -286,7 +296,7 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      return { operateur: operateur, rotation: rotationVal, date: dateVal, evt_sst: evtSst, evt_env: evtEnv, travaux: travaux, categories: cats };
+      return { operateur: operateur, rotation: rotationVal, date: dateVal, evt: evt, resume: resume, categories: cats };
     }
     // Enregistrer le brouillon pour la rotation salle de contrôle
     function saveDraft() {
@@ -306,9 +316,8 @@
           if (document.getElementById('operateur')) document.getElementById('operateur').value = draft.operateur || '';
           if (document.getElementById('rotation')) document.getElementById('rotation').value = draft.rotation || '';
           if (document.getElementById('date')) document.getElementById('date').value = draft.date || '';
-          if (document.getElementById('evt_sst')) document.getElementById('evt_sst').value = draft.evt_sst || '';
-          if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
-          if (document.getElementById('travaux')) document.getElementById('travaux').value = draft.travaux || '';
+          if (document.getElementById('evt')) document.getElementById('evt').value = draft.evt || '';
+          if (document.getElementById('resume')) document.getElementById('resume').value = draft.resume || '';
           // Catégories
           (draft.categories || []).forEach(function(cat) {
             var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
@@ -371,9 +380,8 @@
       var body = 'Date: ' + report.date + '\n';
       body += 'Opérateur: ' + report.operateur + '\n';
       body += 'Rotation: ' + report.rotation + '\n\n';
-      body += 'Événement SST: ' + report.evt_sst + '\n';
-      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
-      body += 'Travaux mécanique en cours: ' + report.travaux + '\n\n';
+      body += 'Événements SST / Environnement: ' + report.evt + '\n';
+      body += 'Résumé de la rotation: ' + report.resume + '\n\n';
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
         body += cat.categorie + '\n';
