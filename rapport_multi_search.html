@@ -63,7 +63,7 @@
         <div>
           <label for="reportType">Type de rapport&nbsp;:</label>
           <select id="reportType" name="reportType">
-            <option value="quart_superviseur">Changement de quart (superviseur)</option>
+            <option value="quart_superviseur">Changement de quart (opération)</option>
             <option value="quart_control">Changement de quart (salle de contrôle)</option>
             <option value="rotation_superviseur">Changement de rotation (superviseur)</option>
             <option value="rotation_control">Changement de rotation (salle de contrôle)</option>
@@ -165,7 +165,7 @@
               quart: quartVal,
               categorie: '',
         // Utiliser en priorité le résumé s'il existe, sinon les événements (anciens ou nouveaux champs)
-        commentaire: (r.resume || r.resume_jour || r.resume_rotation || r.evt || r.evt_sst || r.evt_env || r.travaux || '')
+        commentaire: (r.resume || r.resume_supp || r.resume_jour || r.resume_rotation || r.evt || r.evt_sst || r.evt_env || r.travaux || '')
             });
           } else {
             cats.forEach(function(cat) {
