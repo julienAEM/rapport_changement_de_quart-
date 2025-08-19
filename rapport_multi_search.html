@@ -104,7 +104,8 @@
             <option value="Mini-Pulse">Mini-Pulse</option>
             <option value="Fabrication de Puck">Fabrication de Puck</option>
             <option value="Traitement des eaux">Traitement des eaux</option>
-            <option value="Commentaire générale">Commentaire générale</option>
+          <option value="Commentaire générale">Commentaire générale</option>
+          <option value="Modifications DCS/Procédure/By-pass">Modifications DCS / Procédure / By‑pass</option>
           </select>
         </div>
         <div>
@@ -163,7 +164,8 @@
               type: type,
               quart: quartVal,
               categorie: '',
-              commentaire: r.resume_jour || r.evt_sst || r.evt_env || r.travaux || ''
+        // Utiliser en priorité le résumé s'il existe, sinon les événements (anciens ou nouveaux champs)
+        commentaire: (r.resume || r.resume_jour || r.resume_rotation || r.evt || r.evt_sst || r.evt_env || r.travaux || '')
             });
           } else {
             cats.forEach(function(cat) {
