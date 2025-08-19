@@ -10,7 +10,7 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
-  <title>Changement de quart – Superviseur</title>
+  <title>Changement de quart – Opération</title>
   <style>
     :root {
       --primary-color: #253746;
@@ -105,7 +105,7 @@
   <div class="form-wrapper">
     <div class="form-header">
       <img alt="Logo AEM" src="https://aemhpa.com/hs-fs/hubfs/AEM%20Logo%20(with%20name%20in%20white%20right)%201.png?width=226&height=64&name=AEM%20Logo%20(with%20name%20in%20white%20right)%201.png" />
-      <h1>Changement de quart</h1>
+      <h1>Changement de quart – Opération</h1>
     </div>
     <div class="link-buttons">
       <a class="link-button" href="index.html">Accueil</a>
@@ -138,6 +138,12 @@
            Ce champ permet au superviseur d'indiquer les tâches accomplies pendant le quart. -->
       <label for="resume">Résumé de la journée :</label>
       <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
+
+      <!-- Champ complémentaire permettant de saisir des observations supplémentaires. Ce
+           champ suit les mêmes spécifications que le résumé principal et est
+           également sauvegardé dans la base de données. -->
+      <label for="resume_supp">Observations supplémentaires :</label>
+      <textarea id="resume_supp" name="resume_supp" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <table class="team-table" id="categoryTable">
         <thead>
           <tr>
@@ -353,6 +359,12 @@
         autoGrow(resumeField);
         resumeField.addEventListener('input', function() { autoGrow(this); });
       }
+      // Ajuster la hauteur du champ d'observations supplémentaires
+      var resumeSupp = document.getElementById('resume_supp');
+      if (resumeSupp) {
+        autoGrow(resumeSupp);
+        resumeSupp.addEventListener('input', function() { autoGrow(this); });
+      }
     });
     // Fonction pour basculer l'état d'une ligne
     function toggleStatus(btn) {
@@ -376,6 +388,7 @@
       var evtEnv = document.getElementById('evt_env').value;
       // Le champ travaux mécanique a été supprimé au profit d'un résumé complet de la journée
       var resume = document.getElementById('resume').value;
+      var resume_supp = document.getElementById('resume_supp').value;
       var cats = [];
       var rows = document.querySelectorAll('#categoryTable tbody tr');
       rows.forEach(function(row) {
@@ -386,7 +399,7 @@
         var etat = selectedBtn ? selectedBtn.textContent : '';
         cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
       });
-      return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, resume: resume, categories: cats };
+      return { date: dateVal, superviseur: superviseur, chef_equipe: chef, quart: quart, evt_sst: evtSst, evt_env: evtEnv, resume: resume, resume_supp: resume_supp, categories: cats };
     }
     // Enregistrer le brouillon actuel pour revenir plus tard
     function saveDraft() {
@@ -412,6 +425,7 @@
           if (document.getElementById('evt_env')) document.getElementById('evt_env').value = draft.evt_env || '';
           // Le champ travaux mécanique est obsolète; charger uniquement le résumé s'il existe
           if (document.getElementById('resume')) document.getElementById('resume').value = draft.resume || '';
+          if (document.getElementById('resume_supp')) document.getElementById('resume_supp').value = draft.resume_supp || '';
           // Remplir les catégories
           (draft.categories || []).forEach(function(cat) {
             var row = document.querySelector('#categoryTable tbody tr[data-category="' + cat.categorie + '"]');
@@ -467,7 +481,11 @@
       body += 'Événement SST: ' + report.evt_sst + '\n';
       body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
       // Le champ travaux mécanique est supprimé; inclure plutôt le résumé de la journée
-      body += 'Résumé de la journée: ' + report.resume + '\n\n';
+      body += 'Résumé de la journée: ' + report.resume + '\n';
+      if (report.resume_supp) {
+        body += 'Observations supplémentaires: ' + report.resume_supp + '\n';
+      }
+      body += '\n';
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
         body += cat.categorie + '\n';
