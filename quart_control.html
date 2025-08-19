@@ -113,7 +113,7 @@
            de la journée. Cette zone élargie permet de consigner les tâches
            accomplies pendant le quart et de fournir un résumé clair. -->
       <label for="resume">Résumé de la journée :</label>
-      <textarea id="resume" name="resume" style="min-height: 120px;"></textarea>
+      <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
         <thead>
@@ -259,6 +259,12 @@
     </div>
   </div>
   <script>
+    // Fonction pour ajuster automatiquement la hauteur du champ résumé en fonction du contenu
+    function autoGrow(textarea) {
+      // Réinitialiser la hauteur pour calculer correctement le scrollHeight
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
     // Fonction pour basculer l'état entre Arrêt et Fonction
     function toggleStatus(btn) {
       // Retirer l'état sélectionné des boutons frères
@@ -303,6 +309,13 @@
       }
       // Charger un brouillon existant après initialisation de la date
       loadDraft();
+
+      // Ajuster la hauteur du champ résumé après chargement du brouillon
+      var resumeField = document.getElementById('resume');
+      if (resumeField) {
+        autoGrow(resumeField);
+        resumeField.addEventListener('input', function() { autoGrow(this); });
+      }
       // Sauvegarder le brouillon à chaque modification de champ
       var inputs = document.querySelectorAll('input, textarea, select');
       inputs.forEach(function(el) {
