@@ -523,5 +523,87 @@
     document.getElementById('emailBtn').addEventListener('click', function() { sendEmail(); });
     document.getElementById('printBtn').addEventListener('click', function() { window.print(); });
   </script>
+  <!-- Script de rafraîchissement automatique avec sauvegarde du brouillon -->
+  <script>
+    (function() {
+      // Durée avant d'afficher la fenêtre de mise à jour (30 minutes)
+      var REFRESH_INTERVAL = 30 * 60 * 1000;
+      // Durée du compte à rebours en secondes
+      var COUNTDOWN_SECONDS = 20;
+      var refreshTimer;
+      function startRefreshTimer() {
+        refreshTimer = setTimeout(promptRefresh, REFRESH_INTERVAL);
+      }
+      function promptRefresh() {
+        // Créer une superposition semi-transparente
+        var overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.background = 'rgba(0,0,0,0.6)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '9999';
+        // Créer la boîte de dialogue
+        var modal = document.createElement('div');
+        modal.style.background = '#ffffff';
+        modal.style.padding = '2rem';
+        modal.style.borderRadius = '8px';
+        modal.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+        modal.style.textAlign = 'center';
+        // Message avec compteur
+        var msg = document.createElement('p');
+        var remaining = COUNTDOWN_SECONDS;
+        msg.textContent = 'Une mise à jour sera appliquée dans ' + remaining + ' secondes.';
+        modal.appendChild(msg);
+        // Bouton pour mettre à jour immédiatement
+        var btnUpdate = document.createElement('button');
+        btnUpdate.textContent = 'Mettre à jour maintenant';
+        btnUpdate.style.marginRight = '1rem';
+        // Bouton pour reporter la mise à jour
+        var btnLater = document.createElement('button');
+        btnLater.textContent = 'Plus tard';
+        modal.appendChild(btnUpdate);
+        modal.appendChild(btnLater);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        // Compte à rebours
+        var interval = setInterval(function() {
+          remaining--;
+          msg.textContent = 'Une mise à jour sera appliquée dans ' + remaining + ' secondes.';
+          if (remaining <= 0) {
+            clearInterval(interval);
+            triggerRefresh();
+          }
+        }, 1000);
+        // Action pour mise à jour maintenant
+        btnUpdate.onclick = function() {
+          clearInterval(interval);
+          triggerRefresh();
+        };
+        // Action pour plus tard
+        btnLater.onclick = function() {
+          clearInterval(interval);
+          document.body.removeChild(overlay);
+          startRefreshTimer();
+        };
+      }
+      function triggerRefresh() {
+        // Sauvegarder un brouillon si la fonction existe
+        try {
+          if (typeof saveDraft === 'function') {
+            saveDraft();
+          }
+        } catch (e) {}
+        window.location.reload(true);
+      }
+      document.addEventListener('DOMContentLoaded', function() {
+        startRefreshTimer();
+      });
+    })();
+  </script>
 </body>
 </html>
