@@ -425,29 +425,39 @@
       // Enregistrer d'abord pour conserver le rapport
       saveReport();
       // Construire le corps du courriel
-      var body = 'Date: ' + report.date + '\n';
-      body += 'Opérateur: ' + report.operateur + '\n';
-      body += 'Quart: ' + report.quart + '\n\n';
-      body += 'Événement SST: ' + report.evt_sst + '\n';
-      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
-      // Ajouter le résumé de la journée à la place du champ travaux
-      body += 'Résumé de la journée: ' + report.resume + '\n';
-      if (report.resume_supp) {
-        body += 'Observations supplémentaires: ' + report.resume_supp + '\n';
+      var body = '';
+      body += 'Type: Changement de quart – salle de contrôle\n';
+      body += 'Date: ' + report.date + '\n';
+      body += 'Quart: ' + report.quart + '\n';
+      body += 'Opérateur: ' + report.operateur + '\n\n';
+      // Résumés
+      if (report.resume) {
+        body += 'Résumé de la journée:\n' + report.resume + '\n\n';
       }
-      body += '\n';
+      if (report.resume_supp) {
+        body += 'Observations supplémentaires:\n' + report.resume_supp + '\n\n';
+      }
+      // Événements
+      if (report.evt_sst) {
+        body += 'Événement SST:\n' + report.evt_sst + '\n\n';
+      }
+      if (report.evt_env) {
+        body += 'Événement environnement et MDR:\n' + report.evt_env + '\n\n';
+      }
+      // Catégories détaillées
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
-        body += cat.categorie + '\n';
-        body += 'Consigne: ' + cat.consigne + '\n';
-        body += 'Commentaires: ' + cat.commentaire + '\n';
-        body += 'État: ' + cat.etat + '\n\n';
+        body += '- ' + cat.categorie + '\n';
+        if (cat.consigne) body += '  Consigne: ' + cat.consigne + '\n';
+        if (cat.commentaire) body += '  Commentaire: ' + cat.commentaire + '\n';
+        if (cat.etat) body += '  État: ' + cat.etat + '\n';
+        body += '\n';
       });
       // Destinataires à partir de la liste enregistrée
       var emailListRaw = localStorage.getItem('emailList') || '';
       var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
       var toField = emailArray.join(',');
-      var subject = 'Plan de match - ' + report.date;
+      var subject = 'Changement de quart (salle de contrôle) – ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       window.location.href = mailtoLink;
       // Supprimer le brouillon après l'envoi
