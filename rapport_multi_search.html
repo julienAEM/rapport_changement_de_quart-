@@ -33,7 +33,8 @@
     .nav-button { display: inline-block; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border-radius: 4px; text-decoration: none; font-size: 1rem; }
     .nav-button:hover { background: #005fa0; }
     .content { padding: 2rem; }
-    form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    /* Répartition des filtres en quatre colonnes fixes pour plus de clarté */
+    form { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
     label { display: block; margin-bottom: 0.3rem; font-weight: bold; }
     input[type="date"], select, input[type="text"] { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 4px; background: var(--field-bg); color: #333; box-sizing: border-box; }
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
@@ -60,6 +61,7 @@
     </div>
     <div class="content">
       <form id="searchForm">
+        <!-- Première ligne : type et date de début -->
         <div>
           <label for="reportType">Type de rapport&nbsp;:</label>
           <select id="reportType" name="reportType">
@@ -73,16 +75,18 @@
           <label for="date_debut">Date début&nbsp;:</label>
           <input type="date" id="date_debut" name="date_debut">
         </div>
+        <!-- Deuxième ligne : superviseur et chef d'équipe -->
         <div>
           <label for="superviseur_sel">Superviseur&nbsp;:</label>
-          <select id="superviseur_sel" name="superviseur_sel">
-            <option value="">--Tous--</option>
-            <option value="Vincent Lévesque">Vincent Lévesque</option>
-            <option value="Olivier Chrétien">Olivier Chrétien</option>
-          </select>
+          <input type="text" id="superviseur_sel" name="superviseur_sel" placeholder="Nom du superviseur">
         </div>
         <div>
-          <label for="quart_sel">Quart&nbsp;:</label>
+          <label for="chef_sel">Chef d'équipe&nbsp;:</label>
+          <input type="text" id="chef_sel" name="chef_sel" placeholder="Nom du chef d'équipe">
+        </div>
+        <!-- Troisième ligne : quart/rotation et secteur -->
+        <div>
+          <label for="quart_sel">Quart / Rotation&nbsp;:</label>
           <select id="quart_sel" name="quart_sel">
             <option value="">--Tous--</option>
             <option value="Jour">Jour</option>
@@ -104,19 +108,22 @@
             <option value="Mini-Pulse">Mini-Pulse</option>
             <option value="Fabrication de Puck">Fabrication de Puck</option>
             <option value="Traitement des eaux">Traitement des eaux</option>
-          <option value="Commentaire générale">Commentaire générale</option>
-          <option value="Modifications DCS/Procédure/By-pass">Modifications DCS / Procédure / By‑pass</option>
+            <option value="Commentaire générale">Commentaire générale</option>
+            <option value="Modifications DCS/Procédure/By-pass">Modifications DCS / Procédure / By‑pass</option>
           </select>
         </div>
+        <!-- Quatrième ligne : opérateur -->
         <div>
-          <label for="operateur_sel">Opérateur&nbsp;:</label>
+          <label for="operateur_sel">Opérateur (salle de contrôle)&nbsp;:</label>
           <input type="text" id="operateur_sel" name="operateur_sel" placeholder="Nom de l'opérateur">
         </div>
-        <div style="grid-column: span 3;">
+        <!-- Cinquième ligne : recherche texte libre (sur toute la largeur) -->
+        <div style="grid-column: span 4;">
           <label for="texte">Recherche texte&nbsp;:</label>
           <input type="text" id="texte" name="texte">
         </div>
-        <div style="grid-column: span 3; text-align: right;">
+        <!-- Bouton de recherche aligné à droite -->
+        <div style="grid-column: span 4; text-align: right;">
           <button type="submit" style="padding:0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border:none; border-radius:4px; cursor:pointer;">Rechercher</button>
         </div>
       </form>
@@ -124,14 +131,16 @@
         <thead>
           <tr>
             <th>Date</th>
-            <th>Responsable</th>
-            <th>Type</th>
-            <th>Catégorie</th>
-            <th>Commentaires</th>
+            <th>Superviseur / Opérateur</th>
+            <th>Chef d'équipe</th>
+            <th>Quart / Rotation</th>
+            <th>Secteur</th>
+            <th>Consigne</th>
+            <th>Commentaire</th>
           </tr>
         </thead>
         <tbody>
-          <tr class="no-results"><td colspan="5">Aucun résultat pour le moment.</td></tr>
+          <tr class="no-results"><td colspan="7">Aucun résultat pour le moment.</td></tr>
         </tbody>
       </table>
     </div>
@@ -157,24 +166,32 @@
           var cats = r.categories || [];
           // Valeur de quart ou rotation (pour filtrage)
           var quartVal = r.quart || r.rotation || '';
+          // Déterminer le responsable et l'opérateur
+          var responsable = r.superviseur || r.operateur || '';
+          var operateur = r.operateur || '';
+          var chef = r.chef_equipe || r.chef || '';
           if (cats.length === 0) {
+            // Lorsque qu'il n'y a pas de catégorie, placer le résumé ou les événements dans le commentaire
             flat.push({
               date: r.date || '',
-              responsable: r.superviseur || r.operateur || '',
-              type: type,
+              responsable: responsable,
+              operateur: operateur,
+              chef: chef,
               quart: quartVal,
-              categorie: '',
-        // Utiliser en priorité le résumé s'il existe, sinon les événements (anciens ou nouveaux champs)
-        commentaire: (r.resume || r.resume_supp || r.resume_jour || r.resume_rotation || r.evt || r.evt_sst || r.evt_env || r.travaux || '')
+              secteur: '',
+              consigne: '',
+              commentaire: (r.resume || r.resume_supp || r.resume_jour || r.resume_rotation || r.evt || r.evt_sst || r.evt_env || r.travaux || '')
             });
           } else {
             cats.forEach(function(cat) {
               flat.push({
                 date: r.date || '',
-                responsable: r.superviseur || r.operateur || '',
-                type: type,
+                responsable: responsable,
+                operateur: operateur,
+                chef: chef,
                 quart: quartVal,
-                categorie: cat.categorie || '',
+                secteur: cat.categorie || '',
+                consigne: cat.consigne || '',
                 commentaire: cat.commentaire || ''
               });
             });
@@ -199,11 +216,34 @@
         }
         items.forEach(function(item) {
           var tr = document.createElement('tr');
-          var tdDate = document.createElement('td'); tdDate.textContent = item.date; tr.appendChild(tdDate);
-          var tdResp = document.createElement('td'); tdResp.textContent = item.responsable; tr.appendChild(tdResp);
-          var tdType = document.createElement('td'); tdType.textContent = item.type; tr.appendChild(tdType);
-          var tdCat = document.createElement('td'); tdCat.textContent = item.categorie; tr.appendChild(tdCat);
-          var tdComm = document.createElement('td'); tdComm.textContent = item.commentaire; tr.appendChild(tdComm);
+          // Date
+          var tdDate = document.createElement('td');
+          tdDate.textContent = item.date;
+          tr.appendChild(tdDate);
+          // Superviseur / Opérateur
+          var tdResp = document.createElement('td');
+          tdResp.textContent = item.responsable;
+          tr.appendChild(tdResp);
+          // Chef d'équipe
+          var tdChef = document.createElement('td');
+          tdChef.textContent = item.chef || '';
+          tr.appendChild(tdChef);
+          // Quart / Rotation
+          var tdQuart = document.createElement('td');
+          tdQuart.textContent = item.quart || '';
+          tr.appendChild(tdQuart);
+          // Secteur
+          var tdSecteur = document.createElement('td');
+          tdSecteur.textContent = item.secteur || '';
+          tr.appendChild(tdSecteur);
+          // Consigne
+          var tdCons = document.createElement('td');
+          tdCons.textContent = item.consigne || '';
+          tr.appendChild(tdCons);
+          // Commentaire
+          var tdComm = document.createElement('td');
+          tdComm.textContent = item.commentaire || '';
+          tr.appendChild(tdComm);
           tbody.appendChild(tr);
         });
       }
@@ -223,6 +263,7 @@
         e.preventDefault();
         var dateDebut = document.getElementById('date_debut').value;
         var supSel = document.getElementById('superviseur_sel').value;
+        var chefSel = document.getElementById('chef_sel').value;
         var quartSel = document.getElementById('quart_sel').value;
         var secteurSel = document.getElementById('secteur_sel').value;
         var opSel = document.getElementById('operateur_sel').value.toLowerCase();
@@ -234,18 +275,20 @@
         var flat = flattenReports(data, selectedType);
         var results = [];
         flat.forEach(function(it) {
-          // Date de début (aucune date de fin)
+          // Filtre par date de début
           if (dateDebut && it.date < dateDebut) return;
-          // Filtre superviseur (ou responsable)
+          // Filtre superviseur
           if (supSel && it.responsable !== supSel) return;
+          // Filtre chef d'équipe
+          if (chefSel && it.chef !== chefSel) return;
           // Filtre quart ou rotation
           if (quartSel && it.quart !== quartSel) return;
-          // Filtre secteur (catégorie)
-          if (secteurSel && it.categorie !== secteurSel) return;
-          // Filtre opérateur (sous-chaîne dans le nom du responsable)
-          if (opSel && it.responsable.toLowerCase().indexOf(opSel) === -1) return;
-          // Filtre texte libre (responsable, catégorie, commentaire)
-          var searchSpace = (it.responsable + ' ' + it.categorie + ' ' + it.commentaire).toLowerCase();
+          // Filtre secteur
+          if (secteurSel && it.secteur !== secteurSel) return;
+          // Filtre opérateur (nom complet ou partiel sur la propriété operateur)
+          if (opSel && (!it.operateur || it.operateur.toLowerCase().indexOf(opSel) === -1)) return;
+          // Filtre texte libre sur superviseur/opérateur, secteur, consigne et commentaire
+          var searchSpace = (it.responsable + ' ' + it.chef + ' ' + it.operateur + ' ' + it.secteur + ' ' + it.consigne + ' ' + it.commentaire).toLowerCase();
           if (texteSel && searchSpace.indexOf(texteSel) === -1) return;
           results.push(it);
         });
