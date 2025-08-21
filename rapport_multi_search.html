@@ -64,7 +64,9 @@
         <!-- Première ligne : type et date de début -->
         <div>
           <label for="reportType">Type de rapport&nbsp;:</label>
+          <!-- Ajout d'une option vide en première position : si aucun type n'est sélectionné, la page affiche le dernier rapport sauvegardé -->
           <select id="reportType" name="reportType">
+            <option value="">--Tous les types--</option>
             <option value="quart_superviseur">Changement de quart (opération)</option>
             <option value="quart_control">Changement de quart (salle de contrôle)</option>
             <option value="rotation_superviseur">Changement de rotation (superviseur)</option>
@@ -78,11 +80,15 @@
         <!-- Deuxième ligne : superviseur et chef d'équipe -->
         <div>
           <label for="superviseur_sel">Superviseur&nbsp;:</label>
-          <input type="text" id="superviseur_sel" name="superviseur_sel" placeholder="Nom du superviseur">
+          <select id="superviseur_sel" name="superviseur_sel">
+            <option value="">--Tous--</option>
+          </select>
         </div>
         <div>
           <label for="chef_sel">Chef d'équipe&nbsp;:</label>
-          <input type="text" id="chef_sel" name="chef_sel" placeholder="Nom du chef d'équipe">
+          <select id="chef_sel" name="chef_sel">
+            <option value="">--Tous--</option>
+          </select>
         </div>
         <!-- Troisième ligne : quart/rotation et secteur -->
         <div>
@@ -115,7 +121,9 @@
         <!-- Quatrième ligne : opérateur -->
         <div>
           <label for="operateur_sel">Opérateur (salle de contrôle)&nbsp;:</label>
-          <input type="text" id="operateur_sel" name="operateur_sel" placeholder="Nom de l'opérateur">
+          <select id="operateur_sel" name="operateur_sel">
+            <option value="">--Tous--</option>
+          </select>
         </div>
         <!-- Cinquième ligne : recherche texte libre (sur toute la largeur) -->
         <div style="grid-column: span 4;">
@@ -158,6 +166,77 @@
       var typeSelect = document.getElementById('reportType');
       var searchForm = document.getElementById('searchForm');
       var resultsTable = document.getElementById('resultsTable');
+
+      // -----------------------------------------------------------------------------
+      // Fonctions utilitaires pour peupler les listes et gérer la fusion de rapports
+      // -----------------------------------------------------------------------------
+
+      /**
+       * Remplit un élément <select> avec les valeurs trouvées dans localStorage sous
+       * une clé donnée. Si la clé n'existe pas ou ne contient pas un tableau,
+       * aucune option supplémentaire n'est ajoutée.
+       * @param {string} selectId   L'ID de l'élément <select> à remplir.
+       * @param {string} storageKey La clé localStorage qui contient un tableau de
+       *                            valeurs à ajouter aux options du select.
+       */
+      function populateSelect(selectId, storageKey) {
+        var select = document.getElementById(selectId);
+        if (!select) return;
+        var listStr = localStorage.getItem(storageKey);
+        if (!listStr) return;
+        try {
+          var items = JSON.parse(listStr);
+          if (Array.isArray(items)) {
+            items.forEach(function(item) {
+              if (!item || select.querySelector('option[value="' + item + '"]')) return;
+              var option = document.createElement('option');
+              option.value = item;
+              option.textContent = item;
+              select.appendChild(option);
+            });
+          }
+        } catch (e) {
+          console.error('Erreur de chargement de la liste pour', storageKey, e);
+        }
+      }
+
+      /**
+       * Concatène et aplatit toutes les listes de rapports pour tous les types.
+       * Cela permet de rechercher et d'afficher les rapports sans filtrage initial.
+       * @returns {Array<Object>} Un tableau contenant toutes les entrées aplaties.
+       */
+      function flattenAllReports() {
+        var allFlat = [];
+        Object.keys(keyMap).forEach(function(type) {
+          var key = keyMap[type];
+          var stored = localStorage.getItem(key);
+          var data = stored ? JSON.parse(stored) : [];
+          var flat = flattenReports(data, type);
+          allFlat = allFlat.concat(flat);
+        });
+        return allFlat;
+      }
+
+      /**
+       * Affiche le dernier rapport en se basant sur la date (ordre décroissant).
+       * Utilisé lorsque aucun type spécifique n'est sélectionné dans le filtre.
+       */
+      function showLastReport() {
+        var allFlat = flattenAllReports();
+        if (!allFlat || allFlat.length === 0) {
+          renderRows([]);
+          return;
+        }
+        // Trier par date décroissante. Les dates sont stockées au format AAAA-MM-JJ,
+        // ce qui permet une comparaison lexicographique fiable pour le tri.
+        allFlat.sort(function(a, b) {
+          var da = a.date || '';
+          var db = b.date || '';
+          return db.localeCompare(da);
+        });
+        // Afficher uniquement la première entrée (la plus récente)
+        renderRows([allFlat[0]]);
+      }
 
       // Fonction pour aplatir les rapports en entrées individuelles
       function flattenReports(arr, type) {
@@ -208,7 +287,8 @@
           var tr = document.createElement('tr');
           tr.className = 'no-results';
           var td = document.createElement('td');
-          td.colSpan = 5;
+          // Adapter le colspan au nombre de colonnes de la table (7 colonnes)
+          td.colSpan = 7;
           td.textContent = 'Aucun résultat pour le moment.';
           tr.appendChild(td);
           tbody.appendChild(tr);
@@ -251,6 +331,11 @@
       // Charger et afficher initialement selon le type sélectionné
       function loadAndDisplay() {
         var selectedType = typeSelect.value;
+        if (!selectedType) {
+          // Lorsque le type est vide, afficher le dernier rapport enregistré
+          showLastReport();
+          return;
+        }
         var key = keyMap[selectedType] || 'rapports';
         var stored = localStorage.getItem(key);
         var data = stored ? JSON.parse(stored) : [];
@@ -266,13 +351,19 @@
         var chefSel = document.getElementById('chef_sel').value;
         var quartSel = document.getElementById('quart_sel').value;
         var secteurSel = document.getElementById('secteur_sel').value;
-        var opSel = document.getElementById('operateur_sel').value.toLowerCase();
+        var opSel = document.getElementById('operateur_sel').value;
         var texteSel = document.getElementById('texte').value.toLowerCase();
         var selectedType = typeSelect.value;
-        var key = keyMap[selectedType] || 'rapports';
-        var stored = localStorage.getItem(key);
-        var data = stored ? JSON.parse(stored) : [];
-        var flat = flattenReports(data, selectedType);
+        var flat = [];
+        if (!selectedType) {
+          // Si aucun type n'est sélectionné, fusionner toutes les données
+          flat = flattenAllReports();
+        } else {
+          var key = keyMap[selectedType] || 'rapports';
+          var stored = localStorage.getItem(key);
+          var data = stored ? JSON.parse(stored) : [];
+          flat = flattenReports(data, selectedType);
+        }
         var results = [];
         flat.forEach(function(it) {
           // Filtre par date de début
@@ -285,8 +376,8 @@
           if (quartSel && it.quart !== quartSel) return;
           // Filtre secteur
           if (secteurSel && it.secteur !== secteurSel) return;
-          // Filtre opérateur (nom complet ou partiel sur la propriété operateur)
-          if (opSel && (!it.operateur || it.operateur.toLowerCase().indexOf(opSel) === -1)) return;
+          // Filtre opérateur (sélecteur - correspondance exacte)
+          if (opSel && it.operateur !== opSel) return;
           // Filtre texte libre sur superviseur/opérateur, secteur, consigne et commentaire
           var searchSpace = (it.responsable + ' ' + it.chef + ' ' + it.operateur + ' ' + it.secteur + ' ' + it.consigne + ' ' + it.commentaire).toLowerCase();
           if (texteSel && searchSpace.indexOf(texteSel) === -1) return;
@@ -307,7 +398,12 @@
         });
       }
 
-      // Chargement initial
+      // Chargement initial des listes déroulantes
+      populateSelect('superviseur_sel', 'supervisorList');
+      populateSelect('chef_sel', 'teamLeadList');
+      populateSelect('operateur_sel', 'operatorList');
+
+      // Chargement initial du tableau
       loadAndDisplay();
     });
   </script>
