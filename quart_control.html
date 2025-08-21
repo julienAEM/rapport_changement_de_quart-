@@ -115,8 +115,8 @@
       <label for="resume">Résumé de la journée :</label>
       <textarea id="resume" name="resume" style="min-height: 120px; overflow-y:hidden;"></textarea>
 
-      <!-- Champ complémentaire pour des observations supplémentaires, avec la même présentation que le résumé principal -->
-      <label for="resume_supp">Observations supplémentaires :</label>
+      <!-- Champ complémentaire pour des observations supplémentaires (à faire ou à continuer), avec la même présentation que le résumé principal -->
+      <label for="resume_supp">A faire ou a continuer :</label>
       <textarea id="resume_supp" name="resume_supp" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <!-- Tableau des catégories -->
       <table class="team-table" id="categoryTable">
@@ -435,7 +435,7 @@
         body += 'Résumé de la journée:\n' + report.resume + '\n\n';
       }
       if (report.resume_supp) {
-        body += 'Observations supplémentaires:\n' + report.resume_supp + '\n\n';
+        body += 'A faire ou a continuer:\n' + report.resume_supp + '\n\n';
       }
       // Événements
       if (report.evt_sst) {
