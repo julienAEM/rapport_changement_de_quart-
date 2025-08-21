@@ -142,7 +142,7 @@
       <!-- Champ complémentaire permettant de saisir des observations supplémentaires. Ce
            champ suit les mêmes spécifications que le résumé principal et est
            également sauvegardé dans la base de données. -->
-      <label for="resume_supp">Observations supplémentaires :</label>
+      <label for="resume_supp">A faire ou a continuer&nbsp;:</label>
       <textarea id="resume_supp" name="resume_supp" style="min-height: 120px; overflow-y:hidden;"></textarea>
       <table class="team-table" id="categoryTable">
         <thead>
@@ -488,7 +488,7 @@
         body += 'Résumé de la journée:\n' + report.resume + '\n\n';
       }
       if (report.resume_supp) {
-        body += 'Observations supplémentaires:\n' + report.resume_supp + '\n\n';
+        body += 'A faire ou a continuer:\n' + report.resume_supp + '\n\n';
       }
       // Inclure les événements SST et environnementaux
       if (report.evt_sst) {
