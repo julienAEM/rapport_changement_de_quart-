@@ -379,28 +379,40 @@
     }
     function sendEmail() {
       var report = collectReportData();
-      // Enregistrer avant envoi
+      // Enregistrer le rapport avant l'envoi
       saveReport();
-      var body = 'Date: ' + report.date + '\n';
+      // Construire un corps de courriel clair et structuré
+      var body = '';
+      body += 'Type: Changement de rotation – superviseur\n';
+      body += 'Date: ' + report.date + '\n';
+      body += 'Rotation: ' + report.rotation + '\n';
       body += 'Superviseur: ' + report.superviseur + '\n';
-      body += "Chef d'équipe: " + report.chef + '\n';
-      body += 'Rotation: ' + report.rotation + '\n\n';
-      body += 'Événements SST / Environnement: ' + report.evt + '\n';
-      body += 'Résumé de la rotation: ' + report.resume + '\n\n';
+      if (report.chef) {
+        body += "Chef d'équipe: " + report.chef + '\n';
+      }
+      body += '\n';
+      if (report.resume) {
+        body += 'Résumé de la rotation:\n' + report.resume + '\n\n';
+      }
+      if (report.evt) {
+        body += 'Événements SST / Environnement:\n' + report.evt + '\n\n';
+      }
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
-        body += cat.categorie + '\n';
-        body += 'Consigne: ' + cat.consigne + '\n';
-        body += 'Commentaires: ' + cat.commentaire + '\n';
-        body += 'État: ' + cat.etat + '\n\n';
+        body += '- ' + cat.categorie + '\n';
+        if (cat.consigne) body += '  Consigne: ' + cat.consigne + '\n';
+        if (cat.commentaire) body += '  Commentaire: ' + cat.commentaire + '\n';
+        if (cat.etat) body += '  État: ' + cat.etat + '\n';
+        body += '\n';
       });
+      // Préparer les destinataires
       var emailListRaw = localStorage.getItem('emailList') || '';
       var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
       var toField = emailArray.join(',');
-      var subject = 'Plan de match - ' + report.date;
+      var subject = 'Changement de rotation (superviseur) – ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
       window.location.href = mailtoLink;
-      // Supprimer le brouillon après l'envoi
+      // Supprimer le brouillon après préparation de l'email
       localStorage.removeItem('draft_rotation_superviseur');
     }
     document.getElementById('saveBtn').addEventListener('click', function() { saveReport(); });
