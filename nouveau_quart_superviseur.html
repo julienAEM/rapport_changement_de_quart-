@@ -471,35 +471,51 @@
     // Envoyer par courriel
     function sendEmail() {
       var report = collectReportData();
-      // Sauvegarder avant d'envoyer
+      // Enregistrer avant d'envoyer pour conserver le rapport
       saveReport();
+      // Construire un corps de courriel plus structuré pour faciliter la lecture
       var body = '';
-      body += 'Superviseur: ' + report.superviseur + '\n';
-      if (report.chef_equipe) { body += "Chef d'équipe: " + report.chef_equipe + '\n'; }
+      body += 'Type: Changement de quart – opération\n';
+      body += 'Date: ' + report.date + '\n';
       body += 'Quart: ' + report.quart + '\n';
-      body += 'Date: ' + report.date + '\n\n';
-      body += 'Événement SST: ' + report.evt_sst + '\n';
-      body += 'Événement environnement et MDR: ' + report.evt_env + '\n';
-      // Le champ travaux mécanique est supprimé; inclure plutôt le résumé de la journée
-      body += 'Résumé de la journée: ' + report.resume + '\n';
-      if (report.resume_supp) {
-        body += 'Observations supplémentaires: ' + report.resume_supp + '\n';
+      body += 'Superviseur: ' + report.superviseur + '\n';
+      if (report.chef_equipe) {
+        body += "Chef d'équipe: " + report.chef_equipe + '\n';
       }
       body += '\n';
+      // Inclure les résumés et observations seulement s'ils existent
+      if (report.resume) {
+        body += 'Résumé de la journée:\n' + report.resume + '\n\n';
+      }
+      if (report.resume_supp) {
+        body += 'Observations supplémentaires:\n' + report.resume_supp + '\n\n';
+      }
+      // Inclure les événements SST et environnementaux
+      if (report.evt_sst) {
+        body += 'Événement SST:\n' + report.evt_sst + '\n\n';
+      }
+      if (report.evt_env) {
+        body += 'Événement environnement et MDR:\n' + report.evt_env + '\n\n';
+      }
+      // Détail des catégories avec indentation et lignes vides pour la lisibilité
       body += 'Catégories:\n';
       report.categories.forEach(function(cat) {
-        body += cat.categorie + '\n';
-        body += 'Consigne: ' + cat.consigne + '\n';
-        body += 'Commentaires: ' + cat.commentaire + '\n';
-        body += 'État: ' + cat.etat + '\n\n';
+        body += '- ' + cat.categorie + '\n';
+        if (cat.consigne) body += '  Consigne: ' + cat.consigne + '\n';
+        if (cat.commentaire) body += '  Commentaire: ' + cat.commentaire + '\n';
+        if (cat.etat) body += '  État: ' + cat.etat + '\n';
+        body += '\n';
       });
+      // Préparation de la liste de destinataires
       var emailListRaw = localStorage.getItem('emailList') || '';
       var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
       var toField = emailArray.join(',');
-      var subject = 'Plan de match - ' + report.date;
+      // Sujet plus descriptif
+      var subject = 'Changement de quart (opération) – ' + report.date;
       var mailtoLink = 'mailto:' + encodeURIComponent(toField) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+      // Ouvrir le client mail avec le brouillon prérempli
       window.location.href = mailtoLink;
-      // Supprimer le brouillon après l'envoi
+      // Supprimer le brouillon une fois le courriel préparé
       localStorage.removeItem('draft_quart_superviseur');
     }
     // Écouteurs de boutons
