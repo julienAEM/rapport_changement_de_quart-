@@ -179,24 +179,36 @@
        * @param {string} storageKey La clé localStorage qui contient un tableau de
        *                            valeurs à ajouter aux options du select.
        */
-      function populateSelect(selectId, storageKey) {
+      function populateSelect(selectId, storageKey, defaultArray) {
         var select = document.getElementById(selectId);
         if (!select) return;
         var listStr = localStorage.getItem(storageKey);
-        if (!listStr) return;
-        try {
-          var items = JSON.parse(listStr);
-          if (Array.isArray(items)) {
-            items.forEach(function(item) {
-              if (!item || select.querySelector('option[value="' + item + '"]')) return;
-              var option = document.createElement('option');
-              option.value = item;
-              option.textContent = item;
-              select.appendChild(option);
-            });
+        var items;
+        if (listStr && listStr.trim() !== '') {
+          try {
+            var trimmed = listStr.trim();
+            if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+              items = JSON.parse(trimmed);
+            } else {
+              // Diviser la chaîne par retour à la ligne, virgule ou point-virgule
+              items = listStr.split(/[\n;,]+/);
+            }
+          } catch (e) {
+            items = listStr.split(/[\n;,]+/);
           }
-        } catch (e) {
-          console.error('Erreur de chargement de la liste pour', storageKey, e);
+        } else {
+          // Utiliser la liste par défaut si fournie
+          items = Array.isArray(defaultArray) ? defaultArray : [];
+        }
+        if (Array.isArray(items)) {
+          items.forEach(function(item) {
+            var val = (item || '').trim();
+            if (!val || select.querySelector('option[value="' + val + '"]')) return;
+            var option = document.createElement('option');
+            option.value = val;
+            option.textContent = val;
+            select.appendChild(option);
+          });
         }
       }
 
@@ -398,10 +410,10 @@
         });
       }
 
-      // Chargement initial des listes déroulantes
-      populateSelect('superviseur_sel', 'supervisorList');
-      populateSelect('chef_sel', 'teamLeadList');
-      populateSelect('operateur_sel', 'operatorList');
+      // Chargement initial des listes déroulantes avec valeurs par défaut au besoin
+      populateSelect('superviseur_sel', 'supervisorList', ['Vincent Lévesque','Olivier Chrétien']);
+      populateSelect('chef_sel', 'teamLeadList', ['Jean Dupont','Marie Tremblay','Alain Gagnon','Sophie Lemaire']);
+      populateSelect('operateur_sel', 'operatorList', ['Opérateur 1','Opérateur 2']);
 
       // Chargement initial du tableau
       loadAndDisplay();
