@@ -411,6 +411,11 @@
         var arr = existing ? JSON.parse(existing) : [];
         arr.push(report);
         localStorage.setItem('rapportsControl', JSON.stringify(arr));
+                fetch('https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(report)
+        });
         alert('Rapport enregistré dans la base de données.');
         // Supprimer le brouillon après l'enregistrement
         localStorage.removeItem('draft_quart_control');
