@@ -365,6 +365,12 @@
      */
     function saveReport() {
       var report = collectReportData();
+              fetch('https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(report)
+        });
+      
       try {
         var existing = localStorage.getItem('rotationsControl');
         var arr = existing ? JSON.parse(existing) : [];
