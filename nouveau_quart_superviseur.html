@@ -456,6 +456,12 @@
     function saveReport() {
       var report = collectReportData();
       try {
+            const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec';
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(report)
+    });
         var existing = localStorage.getItem('rapports');
         var arr = existing ? JSON.parse(existing) : [];
         arr.push(report);
