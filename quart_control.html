@@ -406,6 +406,7 @@
     // Enregistrer dans localStorage uniquement
     function saveReport() {
       var report = collectReportData();
+          report._sheet = 'ChangementQuart';
       try {
         var existing = localStorage.getItem('rapportsControl');
         var arr = existing ? JSON.parse(existing) : [];
