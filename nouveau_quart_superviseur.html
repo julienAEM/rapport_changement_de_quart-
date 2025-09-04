@@ -1,5 +1,6 @@
 <script>
-  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
+//  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
+  const ENDPOINT = 'hhttps://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec
 
   // ENVOI (POST) vers la feuille cible
   function sendToHub(payload, SHEET_KEY) {
@@ -478,7 +479,7 @@
       var report = collectReportData();
       try {
             report._sheet = 'ChangementQuart';
-            const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec';
+            
     fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
