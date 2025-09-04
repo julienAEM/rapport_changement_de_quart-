@@ -1,3 +1,22 @@
+<script>
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
+
+  // ENVOI (POST) vers la feuille cible
+  function sendToHub(payload, SHEET_KEY) {
+    const body = Object.assign({_sheet: SHEET_KEY}, payload);
+    return fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(r => r.json());
+  }
+
+  // LECTURE (GET) d’une feuille précise
+  function fetchFromHub(SHEET_KEY) {
+    return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
+      .then(r => r.json());
+  }
+</script>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
