@@ -191,6 +191,34 @@ document.addEventListener('DOMContentLoaded', function() {
   // Afficher toutes les entrées au chargement
   var flatReports = flattenReports(rapports);
   renderRows(flatReports);
+        // Charger les rapports centralises
+      fetchFromHub('ChangementQuart')
+        .then(function(data) {
+          data.forEach(function(row) {
+            rapports.push({
+              date:        row.date || '',
+              superviseur: row.superviseur || '',
+              quart:       row.quart || '',
+              categories: [{
+                categorie:   row.secteur || '',
+                consigne:    row.action || '',
+                commentaire: row.commentaire || '',
+                etat:        row.statut || ''
+              }],
+              resume: '',
+              resume_jour: '',
+              evt_sst: '',
+              evt_env: '',
+              travaux_mec: ''
+            });
+          });
+          flatReports = FlattenReports(rapports);
+          renderRows(flatReports);
+        })
+        .catch(function(err) {
+          console.error('Erreur lors du chargement des rapports centralises: ', err);
+        });
+
 
   // Gérer la recherche
   var searchForm = document.getElementById('searchForm');
