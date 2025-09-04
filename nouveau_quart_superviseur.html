@@ -452,10 +452,13 @@
         console.error('Erreur lors du chargement du brouillon : ', e);
       }
     }
+     
+    
     // Enregistrer dans localStorage
     function saveReport() {
       var report = collectReportData();
       try {
+            report._sheet = 'ChangementQuart';
             const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec';
     fetch(ENDPOINT, {
       method: 'POST',
@@ -468,6 +471,8 @@
         localStorage.setItem('rapports', JSON.stringify(arr));
         alert('Rapport enregistré dans la base de données.');
         // Suppression du brouillon puisque le rapport est désormais enregistré
+       
+        
         localStorage.removeItem('draft_quart_superviseur');
       } catch (e) {
         console.error('Erreur lors de l\'enregistrement : ', e);
