@@ -1,7 +1,5 @@
 <script>
-//  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
-  const ENDPOINT = 'hhttps://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec
-
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
   // ENVOI (POST) vers la feuille cible
   function sendToHub(payload, SHEET_KEY) {
     const body = Object.assign({_sheet: SHEET_KEY}, payload);
@@ -11,7 +9,6 @@
       body: JSON.stringify(body)
     }).then(r => r.json());
   }
-
   // LECTURE (GET) d’une feuille précise
   function fetchFromHub(SHEET_KEY) {
     return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
@@ -477,9 +474,9 @@
     // Enregistrer dans localStorage
     function saveReport() {
       var report = collectReportData();
+      report._sheet = 'ChangementQuart';
       try {
-            report._sheet = 'ChangementQuart';
-            
+            report._sheet = 'ChangementQuart'; 
     fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -502,6 +499,7 @@
     // Envoyer par courriel
     function sendEmail() {
       var report = collectReportData();
+      report._sheet = 'ChangementQuart';
       // Enregistrer avant d'envoyer pour conserver le rapport
       saveReport();
       // Construire un corps de courriel plus structuré pour faciliter la lecture
