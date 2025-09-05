@@ -247,6 +247,34 @@ document.addEventListener('DOMContentLoaded', function() {
       results.push(it);
     });
     renderRows(results);
+    <script>
+  // Adapter la clé selon la page : 'ChangementQuart' / 'adminchangementquart' / 'adminkpi'
+  const SHEET_KEY = 'ChangementQuart';
+  fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
+    .then(resp => resp.json())
+    .then(rows => {
+      rows.forEach(row => {
+        rapports.push({
+          date:        row.date || '',
+          superviseur: row.superviseur || '',
+          quart:       row.quart || '',
+          categories: [{
+            categorie:   row.secteur || '',
+            consigne:    row.action || '',
+            commentaire: row.commentaire || '',
+            etat:        row.statut || ''
+          }],
+          resume_jour: '',
+          evt_sst:     '',
+          evt_env:     '',
+          travaux_mec: ''
+        });
+      });
+      flatReports = flattenReports(rapports);
+      renderRows(flatReports);
+    })
+    .catch(err => console.error('hub GET error:', err));
+</script>
   });
 });
 </script>
