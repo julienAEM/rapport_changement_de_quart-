@@ -1,6 +1,5 @@
 <script>
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
-
   // ENVOI (POST) vers la feuille cible
   function sendToHub(payload, SHEET_KEY) {
     const body = Object.assign({_sheet: SHEET_KEY}, payload);
@@ -384,6 +383,7 @@
      */
     function saveReport() {
       var report = collectReportData();
+      report._sheet = 'ChangementQuart';
               fetch('https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -412,6 +412,7 @@
      */
     function sendEmail() {
       var report = collectReportData();
+      report._sheet = 'ChangementQuart';
       // Enregistrer le rapport avant de préparer l'envoi
       saveReport();
       // Construire un courriel structuré et clair
