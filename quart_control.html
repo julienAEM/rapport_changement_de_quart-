@@ -1,6 +1,5 @@
 <script>
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2uoMbeQjhiEnV1TuuCGjG7Ow0FofRDOq0Oex8FvLqWCAPCgrA/exec';
-
   // ENVOI (POST) vers la feuille cible
   function sendToHub(payload, SHEET_KEY) {
     const body = Object.assign({_sheet: SHEET_KEY}, payload);
@@ -447,6 +446,7 @@
     // Préparer et ouvrir l'email avec les données du rapport
     function sendEmail() {
       var report = collectReportData();
+      report._sheet = 'ChangementQuart';
       // Enregistrer d'abord pour conserver le rapport
       saveReport();
       // Construire le corps du courriel
