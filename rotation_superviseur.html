@@ -314,26 +314,26 @@ const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2u
       }
     });
     // Fonction pour collecter les données du formulaire
-    function collectReportData() 
-    report._sheet = 'ChangementQuart';{
-      var superviseur = document.getElementById('superviseur').value;
-      var chef = document.getElementById('chef').value;
-      var rotationVal = document.getElementById('rotation').value;
-      var dateVal = document.getElementById('date').value;
-      var evt = document.getElementById('evt').value;
-      var resume = document.getElementById('resume').value;
-      var cats = [];
-      var rows = document.querySelectorAll('#categoryTable tbody tr');
-      rows.forEach(function(row) {
-        var catName = row.getAttribute('data-category');
-        var consigne = row.querySelector('textarea[name$="_consigne"]').value;
-        var commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
-        var selectedBtn = row.querySelector('.status-btn.selected');
-        var etat = selectedBtn ? selectedBtn.textContent : '';
-        cats.push({ categorie: catName, consigne: consigne, commentaire: commentaire, etat: etat });
-      });
-      return { superviseur: superviseur, chef: chef, rotation: rotationVal, date: dateVal, evt: evt, resume: resume, categories: cats };
-    }
+    <script>
+function collectReportData() {
+  const superviseur = document.getElementById('superviseur').value;
+  const chef        = document.getElementById('chef').value;
+  const rotation    = document.getElementById('rotation').value;
+  const date        = document.getElementById('date').value;
+  const evt         = document.getElementById('evt').value;
+  const resume      = document.getElementById('resume').value;
+  const categories  = [];
+  document.querySelectorAll('#categoryTable tbody tr').forEach(row => {
+    const categorie   = row.getAttribute('data-category');
+    const consigne    = row.querySelector('textarea[name$="_consigne"]').value;
+    const commentaire = row.querySelector('textarea[name$="_commentaire"]').value;
+    const sel         = row.querySelector('.status-btn.selected');
+    const etat        = sel ? sel.textContent : '';
+    categories.push({ categorie, consigne, commentaire, etat });
+  });
+  return { superviseur, chef, rotation, date, evt, resume, categories };
+}
+</script>
     // Enregistrer le brouillon pour la rotation superviseur
     function saveDraft() {
       var draft = collectReportData();
@@ -383,29 +383,36 @@ const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2u
         console.error('Erreur lors du chargement du brouillon : ', e);
       }
     }
-    function saveReport() {
-      var report = collectReportData();
-      report._sheet = 'ChangementQuart';
-      try {
-        var existing = localStorage.getItem('rotationsSuperviseur');
-        var arr = existing ? JSON.parse(existing) : [];
-        arr.push(report);
-        localStorage.setItem('rotationsSuperviseur', JSON.stringify(arr));
-          fetch('https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(report)
-      });
-        alert('Rapport enregistré dans la base de données.');
-        // Supprimer le brouillon après l'enregistrement
-             
-      });
-        localStorage.removeItem('draft_rotation_superviseur');
-      } catch (e) {
-        console.error('Erreur lors de l\'enregistrement : ', e);
-        alert('Une erreur est survenue lors de l\'enregistrement.');
-      }
-    }
+   <script>
+function saveReport() {
+  const report = collectReportData();
+  report._sheet = 'ChangementRotationSuperviseur'; // <— nom de feuille côté Apps Script
+  try {
+    const existing = localStorage.getItem('rotationsSuperviseur');
+    const arr = existing ? JSON.parse(existing) : [];
+    arr.push(report);
+    localStorage.setItem('rotationsSuperviseur', JSON.stringify(arr));
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(report)
+    })
+    .then(() => {
+      alert('Rapport enregistré dans la base de données.');
+      localStorage.removeItem('draft_rotation_superviseur');
+    })
+    .catch(err => {
+      console.error('Erreur d’envoi :', err);
+      alert('Erreur lors de l’envoi du rapport.');
+    });
+
+  } catch (e) {
+    console.error('Erreur lors de l’enregistrement : ', e);
+    alert('Une erreur est survenue lors de l’enregistrement.');
+  }
+}
+</script>
     function sendEmail() {
       var report = collectReportData();
       report._sheet = 'ChangementQuart';
@@ -436,7 +443,7 @@ const ENDPOINT = 'https://script.google.com/macros/s/AKfycbyJDaQEVNkmRUJsdSXyT2u
         body += '\n';
       });
       // Préparer les destinataires
-      var emailListRaw = localStorage.getItem('emailList') || '';
+      var emailListRaw = localStorage.getItem('emailList',['sbeaulieu@aemhpa.com','lpbernier@aemhpa.com','jaubert@aemhpa.com','yyaddaden@aemhpa.com','cdumont@aemhpa.com','macharron@aemhpa.com','chache@aemhpa.com','mcdugas@aemhpa.com','dnoel@aemhpa.com','vlevesque@aemhpa.com','ochretien@aemhpa.com','asamson@aemhpa.com','gombola@aemhpa.com','sseyer@aemhpa.com','msergerie@aemhpa.com','dmichaud@aemhpa.com','ddeschenes@aemhpa.com','sboucher@aemhpa.com','jcvallee@aemhpa.com','epicard@aemhpa.com']) || '';
       var emailArray = emailListRaw.split(/[;\n]+/).map(function(e) { return e.trim(); }).filter(function(e) { return e.length > 0; });
       var toField = emailArray.join(',');
       var subject = 'Changement de rotation (superviseur) – ' + report.date;
