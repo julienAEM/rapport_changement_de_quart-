@@ -180,7 +180,25 @@
         'rotation_superviseur': 'rotationsSuperviseur',
         'rotation_control': 'rotationsControl'
       };
-
+<script>
+function populateSelect(id, key, defaults) {
+  const select = document.getElementById(id);
+  let list = [];
+  try { list = (localStorage.getItem(key) || '').split(/\n|;/).map(s => s.trim()).filter(Boolean); } catch(e){}
+  const items = list.length ? list : (defaults || []);
+  select.innerHTML = '<option value="">--Tous--</option>';
+  items.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    select.appendChild(opt);
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  populateSelect('superviseur_sel','supervisorList',['Vincent Lévesque','Olivier Chrétien']);
+  populateSelect('chef_sel','teamLeadList',['Étienne Picard','David Michaud','Danick Deschenes','Samuel Boucher','Jean-Chrystophe Vallée']);
+  populateSelect('operateur_sel','operatorList',['Serge Landry','Raymond Émond','Vincent Morin','Éric-Hugo Bastien','Samuel Boucher','Vincent Lévesque','Olivier Chrétien']);
+});
+</script>
       var typeSelect = document.getElementById('reportType');
       var searchForm = document.getElementById('searchForm');
       var resultsTable = document.getElementById('resultsTable');
@@ -414,35 +432,6 @@
           results.push(it);
         });
         renderRows(results);
-        <script>
-  // Adapter la clé selon la page : 'ChangementQuart' / 'adminchangementquart' / 'adminkpi'
-  const SHEET_KEY = 'ChangementQuart';
-
-  fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
-    .then(resp => resp.json())
-    .then(rows => {
-      rows.forEach(row => {
-        rapports.push({
-          date:        row.date || '',
-          superviseur: row.superviseur || '',
-          quart:       row.quart || '',
-          categories: [{
-            categorie:   row.secteur || '',
-            consigne:    row.action || '',
-            commentaire: row.commentaire || '',
-            etat:        row.statut || ''
-          }],
-          resume_jour: '',
-          evt_sst:     '',
-          evt_env:     '',
-          travaux_mec: ''
-        });
-      });
-      flatReports = flattenReports(rapports);
-      renderRows(flatReports);
-    })
-    .catch(err => console.error('hub GET error:', err));
-</script>
       });
 
       // Changer de type déclenche le rechargement des données
@@ -466,6 +455,58 @@
       loadAndDisplay();
     });
   </script>
+ <script>
+  // --------- Chargement initial depuis la base (Apps Script) ----------
+  // Adapter la clé selon votre feuille côté Apps Script
+  (function(){
+    const SHEET_KEY = 'ChangementQuart';
+    fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
+      .then(resp => resp.json())
+      .then(rows => {
+        const rapports = rows.map(row => ({
+          date:        row.date || '',
+          superviseur: row.superviseur || '',
+          quart:       row.quart || '',
+          // On aplatit dans le même format que les données locales
+          consigne:    row.action || '',
+          commentaire: row.commentaire || '',
+          secteur:     row.secteur || '',
+          statut:      row.statut || ''
+        }));
+        // Fusionne avec localStorage si besoin, puis affiche
+        const flat = rapports.map(it => ({
+          date: it.date,
+          responsable: it.superviseur,
+          chef: '',
+          quart: it.quart,
+          secteur: it.secteur,
+          consigne: it.consigne,
+          commentaire: it.commentaire,
+          operateur: ''
+        }));
+        // Si un type est sélectionné, on re-filtre via le submit existant;
+        // sinon on affiche ces résultats pré-chargés
+        const tbody = document.querySelector('table tbody');
+        if (tbody) {
+          tbody.innerHTML = '';
+          flat.forEach(item => {
+            const tr = document.createElement('tr');
+            const cells = [
+              item.date, item.responsable, item.chef, item.quart,
+              item.secteur, item.consigne, item.commentaire
+            ];
+            cells.forEach(text => {
+              const td = document.createElement('td');
+              td.textContent = text || '';
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        }
+      })
+      .catch(err => console.error('hub GET error:', err));
+  })();
+</script>
   <!-- Script de rafraîchissement automatique pour recharger la page -->
   <script>
     (function() {
