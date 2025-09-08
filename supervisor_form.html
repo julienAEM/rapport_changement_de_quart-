@@ -40,6 +40,7 @@
   .link-button { display: inline-block; padding: 0.7rem 1.4rem; background: var(--accent-color); color: var(--text-light); border-radius: 4px; text-decoration: none; font-size: 1rem; }
   .link-button:hover { background: #005fa0; }
   .form-content { padding: 2rem; }
+  <button type="button" onclick="saveReport()">Enregistrer</button>
   label { display: block; margin-top: 0.8rem; font-weight: bold; color: var(--text-light); }
   input[type="text"], textarea, select { width: 100%; padding: 0.6rem; margin-top: 0.2rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; background: var(--field-bg); color: #333; }
   textarea { resize: vertical; min-height: 60px; }
@@ -413,7 +414,81 @@ document.addEventListener('DOMContentLoaded', function() {
     dateInput.value = today;
   }
 });
+  <script>
+function populateSelect(id, key, defaults) {
+  const select = document.getElementById(id);
+  let list = [];
+  try { list = (localStorage.getItem(key) || '').split(/\n|;/).map(s => s.trim()).filter(Boolean); } catch(e){}
+  const items = list.length ? list : (defaults || []);
+  select.innerHTML = '<option value="">--Sélectionnez--</option>';
+  items.forEach(v => {
+    const opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    select.appendChild(opt);
+  });
+}
+document.addEventListener('DOMContentLoaded', () => {
+  populateSelect('superviseur','supervisorList',['Vincent Lévesque','Olivier Chrétien']);
+});
 </script>
-
+</script>
+<script>
+function collectSupervisorReport() {
+  const superviseur = document.getElementById('superviseur').value;
+  const sante       = document.getElementById('sante').value;
+  const env         = document.getElementById('environnement').value;
+  const production  = document.getElementById('production').value;
+  const resume      = document.getElementById('resume').value;
+  // Ajoute ici les sections/catégories si tu veux les structurer
+  return { superviseur, sante, environnement: env, production, resume };
+}
+function saveReport() {
+  const report = collectSupervisorReport();
+  report._sheet = 'RapportFinRotationSuperviseur';
+  try {
+    const arr = JSON.parse(localStorage.getItem('rotationsSuperviseur') || '[]');
+    arr.push(report);
+    localStorage.setItem('rotationsSuperviseur', JSON.stringify(arr));
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(report)
+    })
+    .then(() => alert('Rapport enregistré.'))
+    .catch(err => { console.error(err); alert('Erreur lors de l’envoi.'); });
+  } catch (e) {
+    console.error(e); alert('Erreur locale.');
+  }
+}
+</script>
+<script>
+function collectSupervisorReport() {
+  const superviseur = document.getElementById('superviseur').value;
+  const sante       = document.getElementById('sante').value;
+  const env         = document.getElementById('environnement').value;
+  const production  = document.getElementById('production').value;
+  const resume      = document.getElementById('resume').value;
+  // Ajoute ici les sections/catégories si tu veux les structurer
+  return { superviseur, sante, environnement: env, production, resume };
+}
+function saveReport() {
+  const report = collectSupervisorReport();
+  report._sheet = 'RapportFinRotationSuperviseur';
+  try {
+    const arr = JSON.parse(localStorage.getItem('rotationsSuperviseur') || '[]');
+    arr.push(report);
+    localStorage.setItem('rotationsSuperviseur', JSON.stringify(arr));
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(report)
+    })
+    .then(() => alert('Rapport enregistré.'))
+    .catch(err => { console.error(err); alert('Erreur lors de l’envoi.'); });
+  } catch (e) {
+    console.error(e); alert('Erreur locale.');
+  }
+}
+</script>
 </body>
 </html>
