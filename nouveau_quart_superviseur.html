@@ -2,7 +2,7 @@
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxaGBM2UyvLY0cFXJkzYpFsJpXi2uGuzhFi7n6N5SwWrLkxWFWbYKkOe7lDPIQzyoTf0A/exec';
   // ENVOI (POST) vers la feuille cible
   function sendToHub(payload, SHEET_KEY) {
-    const body = Object.assign({_sheet: SHEET_KEY}, payload);
+    const body = Object.assign({_sheet: changementQuart }, payload);
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -10,8 +10,8 @@ const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxaGBM2UyvLY0cFXJkzYpF
     }).then(r => r.json());
   }
   // LECTURE (GET) d’une feuille précise
-  function fetchFromHub(SHEET_KEY) {
-    return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
+  function fetchFromHub(ChangementQuart) {
+    return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(ChangementQuart)}`)
       .then(r => r.json());
   }
 </script>
