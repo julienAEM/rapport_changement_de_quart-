@@ -135,7 +135,6 @@
     </table>
   </div>
 </div>
-<script>
 document.addEventListener('DOMContentLoaded', function() {
   // Charger les rapports depuis localStorage
   var stored = localStorage.getItem('rapports');
@@ -212,14 +211,12 @@ document.addEventListener('DOMContentLoaded', function() {
               travaux_mec: ''
             });
           });
-          flatReports = FlattenReports(rapports);
+          flatReports = flattenReports(rapports);
           renderRows(flatReports);
         })
         .catch(function(err) {
           console.error('Erreur lors du chargement des rapports centralises: ', err);
         });
-
-
   // Gérer la recherche
   var searchForm = document.getElementById('searchForm');
   searchForm.addEventListener('submit', function(e) {
