@@ -337,7 +337,6 @@ function collectReportData() {
     // Enregistrer le brouillon pour la rotation superviseur
     function saveDraft() {
       var draft = collectReportData();
-      report._sheet = 'ChangementQuart';
       try {
         localStorage.setItem('draft_rotation_superviseur', JSON.stringify(draft));
       } catch (e) {
@@ -415,7 +414,7 @@ function saveReport() {
 </script>
     function sendEmail() {
       var report = collectReportData();
-      report._sheet = 'ChangementQuart';
+      report._sheet = 'ChangementRotationSuperviseur';
       // Enregistrer le rapport avant l'envoi
       saveReport();
       // Construire un corps de courriel clair et structuré
