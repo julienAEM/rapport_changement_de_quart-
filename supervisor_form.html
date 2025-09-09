@@ -2,8 +2,8 @@
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbxaGBM2UyvLY0cFXJkzYpFsJpXi2uGuzhFi7n6N5SwWrLkxWFWbYKkOe7lDPIQzyoTf0A/exec';
 
   // ENVOI (POST) vers la feuille cible
-  function sendToHub(payload, SHEET_KEY) {
-    const body = Object.assign({_sheet: SHEET_KEY}, payload);
+  function sendToHub(payload, Gestionquarts) {
+    const body = Object.assign({_sheet: Gestionquarts}, payload);
     return fetch(ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -12,8 +12,8 @@
   }
 
   // LECTURE (GET) d’une feuille précise
-  function fetchFromHub(SHEET_KEY) {
-    return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
+  function fetchFromHub(Gestionquarts) {
+    return fetch(`${ENDPOINT}?sheet=${encodeURIComponent(Gestionquarts)}`)
       .then(r => r.json());
   }
 </script>
