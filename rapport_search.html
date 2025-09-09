@@ -162,7 +162,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     return flat;
   }
-
   // Fonction pour afficher les rapports dans le tableau
   function renderRows(items) {
     var tbody = document.querySelector('#resultsTable tbody');
@@ -191,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var flatReports = flattenReports(rapports);
   renderRows(flatReports);
         // Charger les rapports centralises
-      fetchFromHub('ChangementQuart')
+      fetchFromHub('ChangementQuart','RapportFinRotationSuperviseur','ChangementRotationsuperviseur','Changementquartcontrole','ChangementRotationControl','Gestionquarts','adminchangementquart')
         .then(function(data) {
           data.forEach(function(row) {
             rapports.push({
@@ -244,9 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
       results.push(it);
     });
     renderRows(results);
-    <script>
-  // Adapter la clé selon la page : 'ChangementQuart' / 'adminchangementquart' / 'adminkpi'
-  const SHEET_KEY = 'ChangementQuart';
+    // Adapter la clé selon la page : 'ChangementQuart' / 'ChangementQuart' / 'RapportFinRotationSuperviseur' / 'ChangementRotationsuperviseur' / 'Changementquartcontrole' / 'ChangementRotationControl' / 'Gestionquarts' / 'adminchangementquart' 
+  const SHEET_KEY = 'ChangementQuart','RapportFinRotationSuperviseur','ChangementRotationsuperviseur','Changementquartcontrole','ChangementRotationControl','Gestionquarts','adminchangementquart' ;
   fetch(`${ENDPOINT}?sheet=${encodeURIComponent(SHEET_KEY)}`)
     .then(resp => resp.json())
     .then(rows => {
