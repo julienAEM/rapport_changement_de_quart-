@@ -197,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
   populateSelect('chef_sel','teamLeadList',['Étienne Picard','David Michaud','Danick Deschenes','Samuel Boucher','Jean-Chrystophe Vallée']);
   populateSelect('operateur_sel','operatorList',['Serge Landry','Raymond Émond','Vincent Morin','Éric-Hugo Bastien','Samuel Boucher','Vincent Lévesque','Olivier Chrétien']);
 });
-</script>
       var typeSelect = document.getElementById('reportType');
       var searchForm = document.getElementById('searchForm');
       var resultsTable = document.getElementById('resultsTable');
@@ -272,6 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         var allFlat = flattenAllReports();
         if (!allFlat || allFlat.length === 0) {
           renderRows([]);
+       
           return;
         }
         // Trier par date décroissante. Les dates sont stockées au format AAAA-MM-JJ,
@@ -447,8 +447,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Chargement initial des listes déroulantes avec valeurs par défaut au besoin
       populateSelect('superviseur_sel', 'supervisorList', ['Vincent Lévesque','Olivier Chrétien']);
-      populateSelect('chef_sel', 'teamLeadList', ['Jean Dupont','Marie Tremblay','Alain Gagnon','Sophie Lemaire']);
-      populateSelect('operateur_sel', 'operatorList', ['Opérateur 1','Opérateur 2']);
+      populateSelect('chef_sel', 'teamLeadList', ['Étienne Picard','David Michaud','Danick Deschenes','Samuel Boucher','Jean-Chrystophe Vallée']);
+      populateSelect('operateur_sel', 'operatorList', ['Serge Landry','Raymond Émond','Vincent Morin','Éric-Hugo Bastien','Samuel Boucher','Vincent Lévesque','Olivier Chrétien']);
 
       // Chargement initial du tableau
       loadAndDisplay();
