@@ -383,8 +383,8 @@
      */
     function saveReport() {
       var report = collectReportData();
-      report._sheet = 'ChangementQuart';
-              fetch('https://script.google.com/macros/s/AKfycbxAHRKxZriIsOjUA0R_HiCEje24GTNnv8SsFcL3HPTjg3WIVFNjeSDzmJahusCABnQ2Wg/exec', {
+      report._sheet = 'ChangementRotationControl';
+              fetch('https://script.google.com/macros/s/AKfycbxaGBM2UyvLY0cFXJkzYpFsJpXi2uGuzhFi7n6N5SwWrLkxWFWbYKkOe7lDPIQzyoTf0A/exec', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(report)
@@ -412,7 +412,7 @@
      */
     function sendEmail() {
       var report = collectReportData();
-      report._sheet = 'ChangementQuart';
+      report._sheet = 'ChangementRotationControl';
       // Enregistrer le rapport avant de préparer l'envoi
       saveReport();
       // Construire un courriel structuré et clair
